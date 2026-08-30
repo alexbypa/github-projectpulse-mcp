@@ -13,7 +13,7 @@ This Model Context Protocol (MCP) server allows AI assistants to analyze the hea
 - **Code Scanning**: Retrieves CodeQL and other code scanning alerts.
 - **Ping**: Simple connectivity test tool.
 
-### Example Output
+### Example Output with tool Code Scanning
 
 ![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/projectpulse-mcp/main/docs/images/code-scanning-example.png)
 
