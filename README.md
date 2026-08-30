@@ -15,7 +15,7 @@ This Model Context Protocol (MCP) server allows AI assistants to analyze the hea
 
 ### Example Output with tool Code Scanning
 
-![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/projectpulse-mcp/main/docs/images/code-scanning-example.png)
+![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/code-scanning-example.png)
 
 ## Quick Start
 
