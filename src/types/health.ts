@@ -18,4 +18,16 @@ type HealthReport = {
   checkedAt: string;       // ISO timestamp
 }
 
-export { Grade, CategoryScore, HealthReport };
+type ComparisonResult = {
+  compared_at: string;           // ISO timestamp
+  repos: Array<{                 // array di risultati per repo
+    owner: string;
+    repo: string;
+    rank: number;              // 1-based, 0 = errore
+    health: HealthReport | null;  // riusa tipo esistente
+    error: string | null;
+  }>;
+
+}
+
+export { Grade, CategoryScore, HealthReport, ComparisonResult };

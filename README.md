@@ -13,7 +13,18 @@ This Model Context Protocol (MCP) server allows AI assistants to analyze the hea
 - **Code Scanning**: Retrieves CodeQL and other code scanning alerts.
 - **Ping**: Simple connectivity test tool.
 
-### Example Output with tool Code Scanning
+## What's New (v1.3.0)
+
+**DORA Metrics** — New `get_dora_metrics` tool that calculates proxy [DORA metrics](https://dora.dev/) for any GitHub repository:
+
+- **Deployment Frequency** — how often releases are published (releases per week)
+- **Lead Time for Changes** — median time from PR creation to merge (in hours)
+- **Change Failure Rate** — percentage of CI workflow runs that fail
+- **Mean Time to Recovery (MTTR)** — median time between a CI failure and the next success on the same branch
+
+All metrics are calculated from public GitHub data (releases, pull requests, workflow runs) with a configurable analysis window (7-90 days, default 30). Metrics return `null` when insufficient data is available, so the tool works safely on any repository.
+
+### Example Output
 
 ![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/code-scanning-example.png)
 
@@ -68,6 +79,7 @@ To use this MCP server in other clients that support `stdio` transport (like Cur
 | `analyze_dependencies` | Get Dependabot alerts for a GitHub repository. | `owner` (string), `repo` (string), `severity` (optional enum: critical, high, medium, low) |
 | `check_ci_status` | Get recent CI/CD workflow runs for a GitHub repository. | `owner` (string), `repo` (string), `limit` (optional number, default: 10) |
 | `analyze_code_scanning` | Get Code Scanning alerts for a GitHub repository with CodeQL. | `owner` (string), `repo` (string) |
+| `get_dora_metrics` | Calculate DORA proxy metrics (deployment frequency, lead time, change failure rate, MTTR) for a GitHub repository. | `owner` (string), `repo` (string), `days` (optional number, default: 30, range: 7-90) |
 | `ping` | Simple connectivity check that responds with a pong. | `message` (string) |
 
 ## Configuration
