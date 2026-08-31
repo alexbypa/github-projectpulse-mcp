@@ -7,6 +7,7 @@ import { registerAnalyzeDependencies } from "./tools/analyze-dependencies.js";
 import { registerAnalyzeCodeScanning } from "./tools/analyze-code-scanning.js";
 import { registerGetHealthScore } from "./tools/get-health-score.js";
 import { registerGetDoraMetrics } from "./tools/get-dora-metrics.js";
+import { registerCompareRepos } from "./tools/compare-repos.js";
 const server = new McpServer({ name: "projectpulse-mcp", version: "0.1.0" });
 
 registerCheckCiStatus(server);
@@ -15,6 +16,7 @@ registerAnalyzeDependencies(server);
 registerAnalyzeCodeScanning(server);
 registerGetHealthScore(server);
 registerGetDoraMetrics(server);
+registerCompareRepos(server);
 
 server.registerTool(
     "ping", {
