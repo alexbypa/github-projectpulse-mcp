@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { 
-    scoreToGrade, 
-    calculateCiScore, 
+import {
+    scoreToGrade,
+    calculateCiScore,
     calculateSecurityScore,
     calculateFreshnessScore,
     calculateCommunityScore,
@@ -109,6 +109,48 @@ describe('calculateSecurityScore', () => {
             detail: 'Alerts: 5 critical, 0 high, 0 medium, 0 low'
         });
     });
+
+    it('should blend dependabot (60%) and openssf (40%) when openssfScore is provided', () => {
+        // dependabot score: 100 - (1 * 25) = 75
+        // openssfScore: 80
+        // total: 75 * 0.6 + 80 * 0.4 = 45 + 32 = 77
+        expect(calculateSecurityScore({
+            critical: 1,
+            high: 0,
+            medium: 0,
+            low: 0
+        }, 80)).toEqual({
+            score: 77,
+            weight: 0.25,
+            detail: 'Alerts: 1 critical, 0 high, 0 medium, 0 low | OpenSSF: 80/100'
+        });
+    });
+
+    it('should mitigate a low dependabot score if openssf is high', () => {
+        expect(calculateSecurityScore({
+            critical: 3, // -75, score 25
+            high: 0,
+            medium: 0,
+            low: 0
+        }, 90)).toEqual({
+            score: 51, // 25 * 0.6 + 90 * 0.4 = 15 + 36 = 51
+            weight: 0.25,
+            detail: 'Alerts: 3 critical, 0 high, 0 medium, 0 low | OpenSSF: 90/100'
+        });
+    });
+
+    it('should behave exactly as before if openssfScore is explicitly undefined', () => {
+        expect(calculateSecurityScore({
+            critical: 1,
+            high: 0,
+            medium: 0,
+            low: 0
+        }, undefined)).toEqual({
+            score: 75,
+            weight: 0.25,
+            detail: 'Alerts: 1 critical, 0 high, 0 medium, 0 low'
+        });
+    });
 });
 
 describe('calculateFreshnessScore', () => {
@@ -212,7 +254,7 @@ describe('calculateHealthScore', () => {
             security: { score: 100, weight: 0.25, detail: 'Alerts: 0 critical' },
             maintenance: { score: 100, weight: 0.15, detail: 'Active' },
         });
-        
+
         expect(report).toEqual({
             repo: 'test/repo',
             score: 90,
@@ -229,7 +271,7 @@ describe('calculateHealthScore', () => {
             ci: { score: 0, weight: 0.25, detail: '0/1 runs passed' },
             freshness: { score: 100, weight: 0.20, detail: 'Last push 1 days ago' },
         });
-        
+
         expect(report.suggestions).toEqual([
             'Improve 0/1 runs passed (score: 0/100)'
         ]);

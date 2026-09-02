@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getOctokit } from '../github/client.js';
 import { executeGetHealthScore } from './get-health-score.js';
+import { fetchOpenSSFScore } from '../security/openssf-client.js';
 
 vi.mock('../github/client.js');
+vi.mock('../security/openssf-client.js');
 
 describe('executeGetHealthScore', () => {
     beforeEach(() => {
@@ -41,14 +43,14 @@ describe('executeGetHealthScore', () => {
         } as any);
 
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
-        
+
         expect(mockReposGet).toHaveBeenCalledWith({ owner: 'test', repo: 'repo' });
         expect(mockListRuns).toHaveBeenCalledWith({ owner: 'test', repo: 'repo', per_page: 10 });
         expect(mockListAlerts).toHaveBeenCalledWith({ owner: 'test', repo: 'repo' });
-        
+
         expect(result.content).toHaveLength(1);
         expect(result.content[0].type).toBe('text');
-        
+
         const parsedText = JSON.parse(result.content[0].text);
         expect(parsedText.repo).toBe('test/repo');
         expect(parsedText.score).toBeTypeOf('number');
@@ -86,7 +88,7 @@ describe('executeGetHealthScore', () => {
         } as any);
 
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
-        
+
         const parsedText = JSON.parse(result.content[0].text);
         expect(parsedText.repo).toBe('test/repo');
         // If dependabot fails, it should assume 0 alerts
@@ -107,5 +109,50 @@ describe('executeGetHealthScore', () => {
         await expect(executeGetHealthScore({ owner: 'test', repo: 'error-repo' }))
             .rejects
             .toThrow('API Error');
+    });
+
+    it('should include OpenSSF score when available', async () => {
+        const mockReposGet = vi.fn().mockResolvedValue({
+            data: { pushed_at: '2023-10-01T00:00:00Z', open_issues_count: 0, forks_count: 0, license: { spdx_id: 'MIT' }, description: 'test', archived: false }
+        });
+        const mockListRuns = vi.fn().mockResolvedValue({ data: { workflow_runs: [] } });
+        const mockListAlerts = vi.fn().mockResolvedValue({ data: [] });
+
+        vi.mocked(getOctokit).mockReturnValue({
+            repos: { get: mockReposGet },
+            actions: { listWorkflowRunsForRepo: mockListRuns },
+            dependabot: { listAlertsForRepo: mockListAlerts }
+        } as any);
+
+        vi.mocked(fetchOpenSSFScore).mockResolvedValue({
+            score: 80, checksUsed: 8, checksTotal: 10, details: "8/10 security checks, score 80/100"
+        });
+
+        const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
+        const parsedText = JSON.parse(result.content[0].text);
+        
+        expect(parsedText.breakdown.security.detail).toContain('OpenSSF');
+    });
+
+    it('should fallback to Dependabot only when OpenSSF is null', async () => {
+        const mockReposGet = vi.fn().mockResolvedValue({
+            data: { pushed_at: '2023-10-01T00:00:00Z', open_issues_count: 0, forks_count: 0, license: { spdx_id: 'MIT' }, description: 'test', archived: false }
+        });
+        const mockListRuns = vi.fn().mockResolvedValue({ data: { workflow_runs: [] } });
+        const mockListAlerts = vi.fn().mockResolvedValue({ data: [] });
+
+        vi.mocked(getOctokit).mockReturnValue({
+            repos: { get: mockReposGet },
+            actions: { listWorkflowRunsForRepo: mockListRuns },
+            dependabot: { listAlertsForRepo: mockListAlerts }
+        } as any);
+
+        vi.mocked(fetchOpenSSFScore).mockResolvedValue(null);
+
+        const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
+        const parsedText = JSON.parse(result.content[0].text);
+        
+        expect(parsedText.breakdown.security.detail).not.toContain('OpenSSF');
+        expect(parsedText.breakdown.security.score).toBe(100);
     });
 });

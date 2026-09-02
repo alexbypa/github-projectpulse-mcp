@@ -1,4 +1,5 @@
 import { Grade, CategoryScore, HealthReport } from "../types/health.js";
+import { fetchOpenSSFScore } from "../security/openssf-client.js";
 
 const WEIGHTS = {
     ci: 0.25,
@@ -33,15 +34,29 @@ export function calculateFreshnessScore(pushedAt: string): CategoryScore {
     return { score, weight: WEIGHTS.freshness, detail: `Last push ${Math.round(daysAgo)} days ago` };
 }
 
-export function calculateSecurityScore(alertCounts: { critical: number; high: number; medium: number; low: number }): CategoryScore {
+export function calculateSecurityScore(alertCounts: { critical: number; high: number; medium: number; low: number }, openssfScore?: number): CategoryScore {
     const { critical, high, medium, low } = alertCounts;
-    let score = 100;
-    score -= critical * 25;
-    score -= high * 15;
-    score -= medium * 5;
-    score -= low * 2;
-    score = Math.max(0, score);
-    return { score, weight: WEIGHTS.security, detail: `Alerts: ${critical} critical, ${high} high, ${medium} medium, ${low} low` };
+
+    // openSsfScore viene calcolato prendendo i punteggi più recenti di security-scorecards
+    let scoreDependaBot = 100;
+
+    scoreDependaBot -= critical * 25;
+    scoreDependaBot -= high * 15;
+    scoreDependaBot -= medium * 5;
+    scoreDependaBot -= low * 2;
+    scoreDependaBot = Math.max(0, scoreDependaBot);
+
+    let score = scoreDependaBot;
+    if (openssfScore != undefined) {
+        score = Math.round(scoreDependaBot * 0.6 + openssfScore * 0.4)
+    }
+
+    return {
+        score: score,
+        weight: WEIGHTS.security,
+        detail: `Alerts: ${critical} critical, ${high} high, ${medium} medium, ${low} low${openssfScore !== undefined ? ` | OpenSSF: ${openssfScore}/100` : ''}`
+    };
+
 }
 
 export function calculateCommunityScore(openIssues: number, forks: number): CategoryScore {
@@ -91,3 +106,4 @@ function gradeToMeaning(grade: Grade): string {
             return "Unknown";
     }
 }
+

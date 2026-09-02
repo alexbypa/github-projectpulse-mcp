@@ -1,39 +1,48 @@
-# ProjectPulse MCP
+<h1 align="center">ProjectPulse MCP 🏥</h1>
 
-**Is that repo healthy, secure, and actively maintained? Ask your AI assistant — get a graded verdict in seconds.**
+<p align="center">
+  <em>GitHub repository health monitoring for AI assistants — works with any language, any repo.</em>
+</p>
 
-ProjectPulse is a Model Context Protocol (MCP) server that lets Claude, Cursor, VS Code Copilot, and any MCP-compatible assistant analyze the **health, security, and maintenance status of any GitHub repository** — directly inside your conversation.
-
-[![npm version](https://img.shields.io/npm/v/projectpulse-mcp)](https://www.npmjs.com/package/projectpulse-mcp)
-[![npm downloads](https://img.shields.io/npm/dm/projectpulse-mcp)](https://www.npmjs.com/package/projectpulse-mcp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
+<p align="center">
+  <a href="https://www.npmjs.com/package/projectpulse-mcp"><img src="https://img.shields.io/npm/v/projectpulse-mcp.svg?color=blue" alt="npm version" /></a>
+  <a href="https://github.com/alexbypa/github-projectpulse-mcp/blob/main/LICENSE"><img src="https://img.shields.io/github/license/alexbypa/github-projectpulse-mcp" alt="license" /></a>
+  <a href="https://github.com/alexbypa/github-projectpulse-mcp/actions"><img src="https://img.shields.io/github/actions/workflow/status/alexbypa/github-projectpulse-mcp/ci.yml?label=tests" alt="tests" /></a>
+  <a href="https://github.com/alexbypa/github-projectpulse-mcp/stargazers"><img src="https://img.shields.io/github/stars/alexbypa/github-projectpulse-mcp" alt="stars" /></a>
+  <a href="https://www.npmjs.com/package/projectpulse-mcp"><img src="https://img.shields.io/npm/dt/projectpulse-mcp" alt="downloads" /></a>
+</p>
 
 ---
 
-## Why ProjectPulse?
+This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server gives AI assistants the ability to analyze health, security, CI/CD status, and delivery metrics of any GitHub repository — directly from your conversations.
 
-The official GitHub MCP server manages repos. **ProjectPulse judges them.**
+## ✨ Features
 
-- 🩺 **Graded verdicts, not raw data** — every check returns a 0–100 score, a letter grade (A–F), a per-category breakdown with weights, and a plain-language summary of the weaknesses. Judgment with receipts, never a black box.
-- 📊 **DORA metrics without enterprise tooling** — deployment frequency, lead time, change failure rate, and MTTR from any repo. No Datadog, no Harness, no GitHub App setup.
-- 🔒 **Security posture built in** — code scanning alerts (CodeQL) and dependency analysis are first-class tools, not an afterthought.
-- ⚖️ **Side-by-side comparison** — evaluating two libraries? Compare their pulse in one call.
-- 🆓 **Free, local, MIT** — runs via `npx`, your token never leaves your machine. No hosted service, no pay-per-usage.
+- 🏥 **Health Score** — comprehensive 0-100 score with grade (A-F), category breakdown, and improvement suggestions
+- 🔒 **Security** — Dependabot alerts blended with [OpenSSF Scorecard](https://scorecard.dev/) checks (60/40 weighted)
+- 📊 **DORA Metrics** — proxy [DORA metrics](https://dora.dev/) from GitHub data: deployment frequency, lead time, change failure rate, MTTR
+- 🔍 **Code Scanning** — CodeQL and other code scanning alerts with severity, message, and creation date
+- 📦 **Dependency Analysis** — Dependabot alerts with severity filtering
+- ⚙️ **CI/CD Status** — recent GitHub Actions workflow runs and conclusions
+- 📋 **Repository Info** — stars, forks, language, license, and general metadata
 
-## Quick Start
+## 📸 Example
 
-Requires Node.js ≥ 18 and a [GitHub personal access token](https://github.com/settings/tokens) (read-only scopes are enough for public repos).
+![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/code-scanning-example.png)
 
-### Claude Code
+## 🚀 Quick Start
+
+### Claude Code (CLI)
 
 ```bash
-claude mcp add projectpulse --env GITHUB_TOKEN=ghp_your_token -- npx -y projectpulse-mcp
+claude mcp add projectpulse -- npx projectpulse-mcp
 ```
+
+> **Note:** You need a `.env` file with your `GITHUB_TOKEN` in the directory where you run Claude Code.
 
 ### Claude Desktop
 
-Add to `claude_desktop_config.json`:
+Add to your `claude_desktop_config.json` (`%APPDATA%\Claude\` on Windows, `~/Library/Application Support/Claude/` on macOS):
 
 ```json
 {
@@ -42,108 +51,89 @@ Add to `claude_desktop_config.json`:
       "command": "npx",
       "args": ["-y", "projectpulse-mcp"],
       "env": {
-        "GITHUB_TOKEN": "ghp_your_token"
+        "GITHUB_TOKEN": "your-github-personal-access-token"
       }
     }
   }
 }
 ```
 
-### Cursor / VS Code
+### Other MCP Clients (Cursor, Windsurf, etc.)
 
-Add to `.mcp.json` (Cursor) or your MCP settings (VS Code):
+Configure a new MCP server with:
+- **Transport**: `stdio`
+- **Command**: `npx`
+- **Arguments**: `-y projectpulse-mcp`
+- **Environment**: `GITHUB_TOKEN` = your GitHub PAT
 
-```json
-{
-  "servers": {
-    "projectpulse": {
-      "command": "npx",
-      "args": ["-y", "projectpulse-mcp"],
-      "env": {
-        "GITHUB_TOKEN": "ghp_your_token"
-      }
-    }
-  }
-}
-```
+## 🛠️ Tools
 
-That's it. Now just ask:
+| Tool | Description | Inputs |
+| --- | --- | --- |
+| `get_health_score` | 0-100 health score with grade (A-F), category breakdown, and suggestions | `owner`, `repo` |
+| `get_dora_metrics` | DORA proxy metrics: deployment frequency, lead time, change failure rate, MTTR | `owner`, `repo`, `days?` (7-90, default 30) |
+| `get_repo_health` | General metadata: stars, issues, language, license, etc. | `owner`, `repo` |
+| `analyze_dependencies` | Dependabot alerts by severity | `owner`, `repo`, `severity?` |
+| `check_ci_status` | Recent CI/CD workflow runs | `owner`, `repo`, `limit?` (default 10) |
+| `analyze_code_scanning` | CodeQL / code scanning alerts | `owner`, `repo` |
+| `ping` | Connectivity check | `message` |
 
-> *"Is `facebook/react` still actively maintained?"*
-> *"Compare the health of `vite` and `webpack` before I migrate."*
-> *"Show me the DORA metrics of my repo over the last 90 days."*
+## 🆕 What's New
 
-## Tools
+### OpenSSF Scorecard Integration
 
-| Tool | Question it answers |
-|---|---|
-| `get_repo_health` | What is the overall state of this repo — activity, responsiveness, community? |
-| `get_health_score` | What's the grade, and exactly which categories produced it? |
-| `get_dora_metrics` | How elite is this team's delivery performance (frequency, lead time, CFR, MTTR)? |
-| `analyze_code_scanning` | Are there open CodeQL / code scanning security alerts? |
-| `analyze_dependencies` | How outdated or risky are the dependencies? |
-| `check_ci_status` | Is CI green, flaky, or silently broken? |
-| `compare_repos` | Which of these repos is the safer bet, dimension by dimension? |
+Security score now blends **Dependabot alerts** (60%) with **OpenSSF Scorecard** checks (40%) for a more complete picture. 12 security-relevant checks are evaluated — repos without a scorecard gracefully fall back to Dependabot-only scoring.
 
-## See it in action
+### DORA Metrics
 
-A real response to *"health score of `alexbypa/CSharp.Essentials`"*:
+New `get_dora_metrics` tool calculates proxy [DORA metrics](https://dora.dev/) from public GitHub data:
 
-![get_health_score — Score 93/100, Grade A, with per-category breakdown](docs/images/get-health-score-demo.png)
+| Metric | Source | Unit |
+| --- | --- | --- |
+| Deployment Frequency | Releases | releases/week |
+| Lead Time for Changes | PR created → merged | hours (median) |
+| Change Failure Rate | CI workflow conclusions | percentage |
+| Mean Time to Recovery | CI failure → next success | hours (median) |
 
-```
-Score: 93/100 — Grade A
+Metrics return `null` when insufficient data is available — works safely on any repository.
 
-| Category    | Score | Weight | Detail                                 |
-|-------------|-------|--------|----------------------------------------|
-| CI          | 100   | 25%    | 10/10 runs passed                      |
-| Freshness   | 100   | 20%    | Last push 2 days ago                   |
-| Security    | 100   | 25%    | Zero alerts across all severities      |
-| Community   | 50    | 15%    | 5 open issues, 0 forks                 |
-| Maintenance | 100   | 15%    | License, description, active — present |
+## ⚙️ Configuration
 
-Only weakness: community score. No forks, some open issues.
-Everything else maxed out.
-```
+### GITHUB_TOKEN
 
-Every answer includes the score, the weighted breakdown, the metric behind each category, and a narrative summary of what's dragging the grade down — so both you and the AI assistant can audit *why*.
+Required to avoid rate limits and access security data (Dependabot, CodeQL alerts).
 
-## How the health score works
+**Option A: Fine-grained PAT (Recommended)**
+1. **Settings** > **Developer settings** > **Personal access tokens** > **Fine-grained tokens**
+2. Select target repositories
+3. Grant **Read-only** access to:
+   - `Code scanning alerts`
+   - `Dependabot alerts`
+   - `Metadata` (default)
 
-The score is a weighted composite of five categories, always the same, always disclosed:
+**Option B: Classic Token**
+Generate with `repo` + `security_events` scopes.
 
-| Category | Weight | What it measures |
-|---|---|---|
-| CI | 25% | Pass rate of recent workflow runs |
-| Security | 25% | Open code scanning alerts across severities |
-| Freshness | 20% | Recency of pushes and activity |
-| Community | 15% | Open issues, forks, adoption signals |
-| Maintenance | 15% | License, description, archived/active status |
+**Providing the token:**
+- **Claude Desktop**: set in `claude_desktop_config.json` (see Quick Start)
+- **Claude Code / Local**: create a `.env` file:
+  ```env
+  GITHUB_TOKEN=ghp_your_token_here
+  ```
 
-Weights are fixed and deterministic: the same repo state always yields the same score and grade. Full scoring logic in [`docs/architecture.md`](docs/architecture.md) and [`src/scoring/health-score.ts`](src/scoring/health-score.ts).
+## 👤 Author
 
-## Configuration
+**alexbypa** — [GitHub](https://github.com/alexbypa) · [npm](https://www.npmjs.com/~alexbypa)
 
-| Variable | Required | Description |
-|---|---|---|
-| `GITHUB_TOKEN` | Recommended | GitHub PAT. Without it, you're limited to 60 requests/hour — fine for a quick look, tight for `compare_repos`. |
+## 🤝 Contributing
 
-## Development
+Contributions, issues and feature requests are welcome!
+Feel free to check the [issues page](https://github.com/alexbypa/github-projectpulse-mcp/issues).
 
-```bash
-git clone https://github.com/alexbypa/github-projectpulse-mcp.git
-cd github-projectpulse-mcp
-npm install
-npm run build
-npm test        # Vitest — every tool is covered
-```
+## ⭐ Show your support
 
-See [`docs/roadmap.md`](docs/roadmap.md) for where the project is heading and [`docs/learning-path.md`](docs/learning-path.md) if you're learning to build MCP servers yourself.
+Give a star if this project helped you!
 
-## Contributing
+## 📝 License
 
-Issues and PRs welcome. If a grade ever feels wrong, open an issue with the repo name — calibrating weights against real-world cases is how this tool gets better.
-
-## License
-
-[MIT](LICENSE) — use it anywhere, including commercial projects.
+MIT — see the [LICENSE](LICENSE) file for details.

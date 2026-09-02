@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOctokit } from "../github/client.js";
+import { fetchOpenSSFScore } from "../security/openssf-client.js";
 import {
     calculateCiScore,
     calculateFreshnessScore,
@@ -18,9 +19,10 @@ const inputSchema = z.object({
 export async function executeGetHealthScore({ owner, repo }: { owner: string; repo: string }) {
     const octokit = getOctokit();
 
-    const [repoData, runsData] = await Promise.all([
+    const [repoData, runsData, openssfResult] = await Promise.all([
         octokit.repos.get({ owner, repo }),
         octokit.actions.listWorkflowRunsForRepo({ owner, repo, per_page: 10 }),
+        fetchOpenSSFScore(owner, repo)
     ]);
 
     let alertCounts = { critical: 0, high: 0, medium: 0, low: 0 };
@@ -39,7 +41,7 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
     const categories = {
         ci: calculateCiScore(runsData.data.workflow_runs as any),
         freshness: calculateFreshnessScore(repoData.data.pushed_at ?? new Date().toISOString()),
-        security: calculateSecurityScore(alertCounts),
+        security: calculateSecurityScore(alertCounts, openssfResult?.score),
         community: calculateCommunityScore(repoData.data.open_issues_count, repoData.data.forks_count),
         maintenance: calculateMaintenanceScore(
             repoData.data.license !== null,
