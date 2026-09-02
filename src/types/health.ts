@@ -16,6 +16,7 @@ type HealthReport = {
   breakdown: Record<string, CategoryScore>;  // ← Record = Dictionary<K,V>
   suggestions: string[];
   checkedAt: string;       // ISO timestamp
+  gradeMeaning: string;
 }
 
 type ComparisonResult = {
