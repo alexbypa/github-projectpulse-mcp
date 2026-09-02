@@ -219,7 +219,8 @@ describe('calculateHealthScore', () => {
             grade: 'A',
             breakdown: expect.any(Object),
             suggestions: [],
-            checkedAt: expect.any(String)
+            checkedAt: expect.any(String),
+            gradeMeaning: expect.any(String)
         });
     });
 

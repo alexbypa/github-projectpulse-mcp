@@ -72,5 +72,22 @@ export function calculateHealthScore(
     const suggestions = values
         .filter(cat => cat.score < 50)
         .map(cat => `Improve ${cat.detail} (score: ${cat.score}/100)`);
-    return { repo, score, grade, breakdown: categories, suggestions, checkedAt: new Date().toISOString() };
+    return { repo, score, grade, breakdown: categories, suggestions, checkedAt: new Date().toISOString(), gradeMeaning: gradeToMeaning(grade) };
+}
+
+function gradeToMeaning(grade: Grade): string {
+    switch (grade) {
+        case "A":
+            return "Excellent: The repository is actively maintained, secure, and has a strong community presence.";
+        case "B":
+            return "Good: The repository is well-maintained but may have minor areas for improvement.";
+        case "C":
+            return "Average: The repository needs significant improvements to be considered healthy.";
+        case "D":
+            return "Poor: The repository is not well-maintained and requires immediate attention.";
+        case "F":
+            return "Critical: The repository is abandoned or has critical issues that need to be addressed.";
+        default:
+            return "Unknown";
+    }
 }
