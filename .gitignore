@@ -26,3 +26,8 @@ coverage/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# mcp-publisher auth tokens (written in the working directory at login)
+.mcpregistry_github_token
+.mcpregistry_registry_token
+mcp_publisher_token
