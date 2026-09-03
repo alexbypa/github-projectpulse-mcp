@@ -1,7 +1,8 @@
 {
   "name": "projectpulse-mcp",
   "description": "MCP Server for GitHub repository health monitoring",
-  "version": "1.4.1",
+  "version": "1.5.1",
+  "mcpName": "io.github.alexbypa/github-projectpulse-mcp",
   "main": "dist/index.js",
   "scripts": {
     "test": "vitest run",
@@ -14,7 +15,8 @@
     "github",
     "health",
     "monitoring",
-    "ai"
+    "ai",
+    "Workflow"
   ],
   "author": "Alessandro Chiodo",
   "license": "MIT",

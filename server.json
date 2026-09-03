@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.alexbypa/github-projectpulse-mcp",
+  "title": "ProjectPulse MCP",
+  "description": "Monitor GitHub repo health, DORA metrics and CI signals from your AI assistant.",
+  "version": "1.5.1",
+  "repository": {
+    "url": "https://github.com/alexbypa/github-projectpulse-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://www.npmjs.com/package/projectpulse-mcp",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "projectpulse-mcp",
+      "version": "1.5.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "GITHUB_TOKEN",
+          "description": "GitHub personal access token. Optional - public repos work without it; raises rate limits and enables private repository access.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
