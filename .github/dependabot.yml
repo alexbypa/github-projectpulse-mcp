@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Controlla gli aggiornamenti per i pacchetti npm (Node.js)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      
+  # Controlla gli aggiornamenti per le GitHub Actions (es. checkout@v4)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
