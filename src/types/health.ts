@@ -31,4 +31,10 @@ type ComparisonResult = {
 
 }
 
+export type TrendSnapshot = {
+  score: number;
+  grade: Grade;
+  checkedAt: string;
+}
+
 export { Grade, CategoryScore, HealthReport, ComparisonResult };

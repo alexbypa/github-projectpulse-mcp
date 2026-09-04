@@ -52,12 +52,12 @@ describe('executeGetHealthScore', () => {
         expect(result.content[0].type).toBe('text');
 
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText.repo).toBe('test/repo');
-        expect(parsedText.score).toBeTypeOf('number');
-        expect(parsedText.grade).toBeTypeOf('string');
+        expect(parsedText.report.repo).toBe('test/repo');
+        expect(parsedText.report.score).toBeTypeOf('number');
+        expect(parsedText.report.grade).toBeTypeOf('string');
         // Ensure dependabot parsing worked:
-        expect(parsedText.breakdown.security.detail).toContain('1 critical');
-        expect(parsedText.breakdown.security.detail).toContain('1 high');
+        expect(parsedText.report.breakdown.security.detail).toContain('1 critical');
+        expect(parsedText.report.breakdown.security.detail).toContain('1 high');
     });
 
     it('should calculate health score successfully even if dependabot fails', async () => {
@@ -90,10 +90,10 @@ describe('executeGetHealthScore', () => {
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
 
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText.repo).toBe('test/repo');
+        expect(parsedText.report.repo).toBe('test/repo');
         // If dependabot fails, it should assume 0 alerts
-        expect(parsedText.breakdown.security.detail).toContain('0 critical');
-        expect(parsedText.breakdown.security.detail).toContain('0 high');
+        expect(parsedText.report.breakdown.security.detail).toContain('0 critical');
+        expect(parsedText.report.breakdown.security.detail).toContain('0 high');
     });
 
     it('should fail if repos.get fails', async () => {
@@ -131,7 +131,7 @@ describe('executeGetHealthScore', () => {
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
         const parsedText = JSON.parse(result.content[0].text);
         
-        expect(parsedText.breakdown.security.detail).toContain('OpenSSF');
+        expect(parsedText.report.breakdown.security.detail).toContain('OpenSSF');
     });
 
     it('should fallback to Dependabot only when OpenSSF is null', async () => {
@@ -152,7 +152,7 @@ describe('executeGetHealthScore', () => {
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
         const parsedText = JSON.parse(result.content[0].text);
         
-        expect(parsedText.breakdown.security.detail).not.toContain('OpenSSF');
-        expect(parsedText.breakdown.security.score).toBe(100);
+        expect(parsedText.report.breakdown.security.detail).not.toContain('OpenSSF');
+        expect(parsedText.report.breakdown.security.score).toBe(100);
     });
 });

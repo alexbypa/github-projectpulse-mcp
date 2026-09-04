@@ -2,6 +2,8 @@ import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOctokit } from "../github/client.js";
 import { fetchOpenSSFScore } from "../security/openssf-client.js";
+import { saveSnapshot, getLastSnapshot } from "../analytics/trend-tracker.js";
+
 import {
     calculateCiScore,
     calculateFreshnessScore,
@@ -50,12 +52,28 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
         ),
     };
 
+
+    const previousSnapshot = await getLastSnapshot(owner, repo);
+
     const report = calculateHealthScore(`${owner}/${repo}`, categories);
+
+    const response = {
+        report,
+        trend: previousSnapshot ? {
+            previousScore: previousSnapshot.score,
+            previousGrade: previousSnapshot.grade,
+            previousCheckedAt: previousSnapshot.checkedAt,
+            scoreDiff: report.score - previousSnapshot.score,
+            direction: report.score < previousSnapshot.score ? "↓" : report.score > previousSnapshot.score ? "↑" : "→"
+        } : null
+    }
+
+    await saveSnapshot(owner, repo, report);
 
     return {
         content: [{
             type: "text" as const,
-            text: JSON.stringify(report, null, 2),
+            text: JSON.stringify(response, null, 2),
         }],
     };
 }
