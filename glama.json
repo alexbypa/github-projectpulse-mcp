@@ -1,0 +1,10 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "projectpulse-mcp",
+  "description": "GitHub repository health monitoring for AI assistants. Analyze health scores (A-F grades), OpenSSF security checks, DORA metrics, code scanning alerts, and CI/CD status of any repo.",
+  "repository": "https://github.com/alexbypa/github-projectpulse-mcp",
+  "license": "MIT",
+  "maintainers": [
+    "alexbypa"
+  ]
+}

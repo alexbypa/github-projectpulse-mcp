@@ -1,0 +1,3 @@
+# The CLI entry point must keep LF endings: a CRLF shebang makes Linux/macOS
+# look for an interpreter named "node\r" and the bin fails to start.
+bin/* text eol=lf
