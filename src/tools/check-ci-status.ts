@@ -3,8 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOctokit } from "../github/client.js";
 
 const inputSchema = z.object({
-    owner: z.string().describe("GitHub repository owner"),
-    repo: z.string().describe("GitHub repository name"),
+    owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+    repo: z.string().describe("GitHub repository name (e.g., 'sdk')"),
     limit: z.number().min(1).max(30).default(10).describe("Number of runs to return"),
 });
 
@@ -32,7 +32,16 @@ export function registerCheckCiStatus(server: McpServer): void {
     server.registerTool(
         "check_ci_status",
         {
-            description: "Read-only operation to get recent CI/CD workflow runs (GitHub Actions) for a GitHub repository. Returns a JSON array of runs, including name, status, conclusion, branch, timestamps, and URL. Subject to standard public GitHub API rate limits. USAGE GUIDELINES: Use this tool ONLY to check raw GitHub Actions workflow history and CI build statuses. DO NOT use this tool for A-F health grading (use get_health_score), basic repo stats (use get_repo_health), or calculated DORA metrics (use get_dora_metrics).",
+            description: `Fetches recent CI/CD workflow runs (GitHub Actions) for a GitHub repository.
+- Side effects: None. This is a strictly read-only operation.
+- Data sources: GitHub REST API (actions/runs).
+- Auth requirements: No authentication required for public repositories. Uses configured token if available.
+- Rate limits: Subject to standard GitHub API limits.
+- Return shape: Returns a JSON array of workflow runs including name, status, conclusion, head_branch, created_at, updated_at, and html_url.
+- Usage guidelines: Use this tool ONLY to check raw GitHub Actions workflow history and CI build statuses. DO NOT use this tool for other analyses:
+  - For a computed A-F health score grading, use 'get_health_score' instead.
+  - For retrieving basic repository stats (stars, forks), use 'get_repo_health' instead.
+  - For calculated DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
         },
         executeCheckCiStatus

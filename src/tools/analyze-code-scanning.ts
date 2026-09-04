@@ -3,8 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOctokit } from "../github/client.js";
 
 const inputSchema = z.object({
-    owner: z.string().describe("GitHub repository owner"),
-    repo: z.string().describe("GitHub repository name"),
+    owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+    repo: z.string().describe("GitHub repository name (e.g., 'sdk')"),
     trigger_scan: z.boolean().optional().default(false)
         .describe("If true, triggers CodeQL workflow then polls for results before returning alerts"),
     poll_timeout_seconds: z.number().optional().default(300)
@@ -173,7 +173,16 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
     server.registerTool(
         "analyze_code_scanning",
         {
-            description: "Read/Write operation to get open Code Scanning (CodeQL) alerts for a GitHub repository. Returns a JSON array of alerts (rule_id, severity, description, message_text, location, html_url). Set trigger_scan=true (writes to GitHub Actions) to auto-discover and trigger the CodeQL workflow, poll for completion, then return fresh alerts. Requires GITHUB_TOKEN. USAGE GUIDELINES: Use this tool ONLY for deep code vulnerability scanning (CodeQL). For dependency/package vulnerabilities, use analyze_dependencies instead. For general A-F health grading, use get_health_score. For standard CI/CD workflow status, use check_ci_status.",
+            description: `Fetches or triggers open Code Scanning (CodeQL) alerts for a GitHub repository.
+- Side effects: Read-only by default. If trigger_scan=true, writes to GitHub Actions by creating a workflow_dispatch event.
+- Data sources: GitHub REST API (code-scanning/alerts and actions).
+- Auth requirements: Requires GITHUB_TOKEN with appropriate permissions (security-events).
+- Rate limits: Subject to standard GitHub API limits.
+- Return shape: Returns a JSON array of alert objects including rule_id, severity, rule_description, state, location paths, and html_url.
+- Usage guidelines: Use this tool ONLY for deep static code vulnerability scanning (CodeQL). DO NOT use this tool for other checks:
+  - For package/dependency vulnerabilities, use 'analyze_dependencies' instead.
+  - For a computed A-F health score grading, use 'get_health_score' instead.
+  - For checking standard CI/CD workflow statuses, use 'check_ci_status' instead.`,
             inputSchema
         },
         executeAnalyzeCodeScanning

@@ -14,8 +14,8 @@ import {
 } from "../scoring/health-score.js";
 
 const inputSchema = z.object({
-    owner: z.string().describe("GitHub repository owner"),
-    repo: z.string().describe("GitHub repository name"),
+    owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+    repo: z.string().describe("GitHub repository name (e.g., 'sdk')"),
 });
 
 export async function executeGetHealthScore({ owner, repo }: { owner: string; repo: string }) {
@@ -82,7 +82,17 @@ export function registerGetHealthScore(server: McpServer): void {
     server.registerTool(
         "get_health_score",
         {
-            description: "Read-only operation to calculate a 0-100 health score for a GitHub repository. Returns a JSON object with a grade (A-F), total score, detailed category breakdown (CI, freshness, security, community, maintenance), and improvement suggestions. Security score blends Dependabot alerts (60%) with OpenSSF Scorecard checks (40%) when available — highlight the OpenSSF score in your response if present in the security detail. Subject to public GitHub API rate limits (60/hour). Use this for deep analytical grading.",
+            description: `Calculates a 0-100 health score and A-F grade for a GitHub repository.
+- Side effects: Writes a trend snapshot to local disk for history tracking. Read-only against GitHub API.
+- Data sources: GitHub REST API (repos, actions, dependabot) and OpenSSF Scorecard API.
+- Auth requirements: No authentication required for public repositories. Uses configured token if available.
+- Rate limits: Subject to standard GitHub API limits (heavy usage across multiple endpoints).
+- Return shape: Returns a JSON object with a grade (A-F), total score, detailed category breakdown (CI, freshness, security, community, maintenance), improvement suggestions, and historical trend data.
+- Usage guidelines: Use this tool ONLY for deep analytical grading and overall repository health assessment. DO NOT use this tool for quick metadata checks:
+  - For basic raw metadata (stars, language, etc.), use 'get_repo_health' instead.
+  - For raw CI workflow statuses, use 'check_ci_status' instead.
+  - For deep code vulnerability scanning, use 'analyze_code_scanning' instead.
+  - For DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
         },
         executeGetHealthScore

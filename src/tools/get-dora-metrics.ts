@@ -4,8 +4,8 @@ import { calculateDoraMetrics } from "../analytics/dora.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const inputSchema = z.object({
-    owner: z.string().describe("GitHub repository owner"),
-    repo: z.string().describe("GitHub repository name"),
+    owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+    repo: z.string().describe("GitHub repository name (e.g., 'sdk')"),
     days: z.number().min(7).max(90).default(30).describe("Number of past days to analyze (default: 30)")
 });
 
@@ -30,7 +30,16 @@ export function registerGetDoraMetrics(server: McpServer): void {
     server.registerTool(
         "get_dora_metrics",
         {
-            description: "Read-only operation to calculate DORA proxy metrics (deployment frequency, lead time for changes, change failure rate, and MTTR) for a GitHub repository. Returns a JSON object with metrics calculated over the specified period (default 30 days). Evaluates PR merge times, release frequencies, and GitHub Actions workflow run conclusions. Subject to public GitHub API rate limits. Requires no special auth but private repos will fail without GITHUB_TOKEN.",
+            description: `Calculates DORA proxy metrics (deployment frequency, lead time, change failure rate, MTTR) for a GitHub repository.
+- Side effects: None. This is a strictly read-only operation.
+- Data sources: GitHub REST API (releases, actions/runs, pulls).
+- Auth requirements: No special authentication required for public repositories. Private repositories require GITHUB_TOKEN.
+- Rate limits: Subject to standard GitHub API limits. Heavy API usage due to multiple list endpoints being queried.
+- Return shape: Returns a JSON object with calculated DORA metrics over the specified period.
+- Usage guidelines: Use this tool ONLY to evaluate DORA metrics and team delivery performance. DO NOT use this tool for other checks:
+  - For raw workflow statuses, use 'check_ci_status' instead.
+  - For a computed A-F health score grading, use 'get_health_score' instead.
+  - For general repository metadata, use 'get_repo_health' instead.`,
             inputSchema,
         },
         executeGetDoraMetrics

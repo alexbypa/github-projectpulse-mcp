@@ -3,8 +3,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOctokit } from "../github/client.js";
 
 const inputSchema = z.object({
-    owner: z.string().describe("GitHub repository owner"),
-    repo: z.string().describe("GitHub repository name")
+    owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+    repo: z.string().describe("GitHub repository name (e.g., 'sdk')")
 });
 
 export async function executeGetRepoHealth({ owner, repo }: { owner: string; repo: string }) {
@@ -47,7 +47,17 @@ export function registerGetRepoHealth(server: McpServer): void {
     server.registerTool(
         "get_repo_health",
         {
-            description: "Read-only operation to fetch basic repository metadata from the public GitHub API. Returns a JSON object containing full_name, description, stargazers_count, open_issues_count, language, license (SPDX ID), pushed_at (ISO date), default_branch, archived status, and forks_count. Subject to standard GitHub unauthenticated rate limits (60 requests/hour). USAGE GUIDELINES: Use this tool ONLY for basic metadata and stats. DO NOT use this tool for A-F grading (use get_health_score instead). For CI/CD workflow status, use check_ci_status. For vulnerability alerts, use analyze_dependencies or analyze_code_scanning. For DORA metrics, use get_dora_metrics.",
+            description: `Fetches basic repository metadata and statistics from the public GitHub API.
+- Side effects: None. This is a strictly read-only operation.
+- Data sources: Public GitHub REST API (GET /repos/{owner}/{repo}).
+- Auth requirements: No authentication required for public repositories. Uses configured GitHub token if available.
+- Rate limits: Subject to standard GitHub API limits (60 requests/hour unauthenticated, 5000 requests/hour authenticated).
+- Return shape: Returns a JSON object containing specific metadata: full_name (string), description (string), stargazers_count (number), open_issues_count (number), language (string), license (string, SPDX ID), pushed_at (ISO 8601 string), default_branch (string), archived (boolean), and forks_count (number).
+- Usage guidelines: Use this tool ONLY to retrieve basic raw metadata (like stars, forks, language, and issue counts). DO NOT use this tool for other specific analyses:
+  - For a computed A-F health score grading, use 'get_health_score' instead.
+  - For checking CI/CD workflow run statuses, use 'check_ci_status' instead.
+  - For package vulnerabilities and dependency graph, use 'analyze_dependencies' instead.
+  - For code security and static analysis, use 'analyze_code_scanning' instead.`,
             inputSchema
         },
         executeGetRepoHealth

@@ -6,8 +6,8 @@ import { ComparisonResult, HealthReport } from "../types/health.js";
 export const inputSchema = z.object({
     repos: z.array(
         z.object({
-            owner: z.string().describe("GitHub repository owner"),
-            repo: z.string().describe("GitHub repository name")
+            owner: z.string().describe("GitHub repository owner (e.g., 'modelcontextprotocol')"),
+            repo: z.string().describe("GitHub repository name (e.g., 'sdk')")
         })
     ).min(2, {
         message: "At least 2 repositories are required"
@@ -90,7 +90,15 @@ export function registerCompareRepos(server: McpServer): void {
     server.registerTool(
         "compare_repos",
         {
-            description: "Read-only operation to compare health scores of multiple GitHub repositories (minimum 2, maximum 5). Returns a JSON object containing a ranked list of repositories, where each entry includes the owner, repo, assigned rank (1 being best), and detailed health breakdown (score, CI, freshness, security, community, maintenance). Re-uses get_health_score logic under the hood and is subject to the same public GitHub API rate limits. Requires no authentication.",
+            description: `Compares health scores of multiple GitHub repositories (2-5 repos) and ranks them.
+- Side effects: None. This is a strictly read-only operation.
+- Data sources: GitHub REST API and OpenSSF Scorecard API (via get_health_score logic).
+- Auth requirements: No authentication required for public repositories. Uses configured token if available.
+- Rate limits: Subject to standard GitHub API limits. Multiplies API calls by the number of repositories compared.
+- Return shape: Returns a JSON object containing a ranked list of repositories (owner, repo, rank) with their detailed health breakdown (score, CI, freshness, security, community, maintenance).
+- Usage guidelines: Use this tool ONLY when you need to compare or rank multiple repositories against each other based on their health scores. DO NOT use this tool for analyzing a single repository:
+  - For getting the health score of a single repository, use 'get_health_score' instead.
+  - For comparing raw metadata instead of health scores, query 'get_repo_health' individually.`,
             inputSchema,
         },
         executeCompareRepos

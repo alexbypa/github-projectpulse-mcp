@@ -1,6 +1,21 @@
 version: 2
 updates:
+  # Aggiorna le dipendenze npm/yarn (package.json)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Aggiorna le versioni delle GitHub Actions usate nei tuoi workflow (.github/workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
