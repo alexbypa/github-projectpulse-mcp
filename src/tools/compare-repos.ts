@@ -90,7 +90,7 @@ export function registerCompareRepos(server: McpServer): void {
     server.registerTool(
         "compare_repos",
         {
-            description: "Compare health scores of multiple GitHub repositories, returning ranked JSON with category breakdown and ranking for each repository",
+            description: "Read-only operation to compare health scores of multiple GitHub repositories (minimum 2, maximum 5). Returns a JSON object containing a ranked list of repositories, where each entry includes the owner, repo, assigned rank (1 being best), and detailed health breakdown (score, CI, freshness, security, community, maintenance). Re-uses get_health_score logic under the hood and is subject to the same public GitHub API rate limits. Requires no authentication.",
             inputSchema,
         },
         executeCompareRepos

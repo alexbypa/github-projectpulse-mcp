@@ -64,7 +64,7 @@ export function registerGetHealthScore(server: McpServer): void {
     server.registerTool(
         "get_health_score",
         {
-            description: "Calculate a 0-100 health score for a GitHub repository with grade (A-F), category breakdown (CI, freshness, security, community, maintenance), and improvement suggestions. Security score blends Dependabot alerts (60%) with OpenSSF Scorecard checks (40%) when available — highlight the OpenSSF score in your response if present in the security detail.",
+            description: "Read-only operation to calculate a 0-100 health score for a GitHub repository. Returns a JSON object with a grade (A-F), total score, detailed category breakdown (CI, freshness, security, community, maintenance), and improvement suggestions. Security score blends Dependabot alerts (60%) with OpenSSF Scorecard checks (40%) when available — highlight the OpenSSF score in your response if present in the security detail. Subject to public GitHub API rate limits (60/hour). Use this for deep analytical grading.",
             inputSchema,
         },
         executeGetHealthScore

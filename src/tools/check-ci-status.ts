@@ -32,7 +32,7 @@ export function registerCheckCiStatus(server: McpServer): void {
     server.registerTool(
         "check_ci_status",
         {
-            description: "Get recent CI/CD workflow runs for a GitHub repository",
+            description: "Read-only operation to get recent CI/CD workflow runs (GitHub Actions) for a GitHub repository. Returns a JSON array of runs, including name, status, conclusion, branch, timestamps, and URL. Subject to standard public GitHub API rate limits. USAGE GUIDELINES: Use this tool ONLY to check raw GitHub Actions workflow history and CI build statuses. DO NOT use this tool for A-F health grading (use get_health_score), basic repo stats (use get_repo_health), or calculated DORA metrics (use get_dora_metrics).",
             inputSchema,
         },
         executeCheckCiStatus

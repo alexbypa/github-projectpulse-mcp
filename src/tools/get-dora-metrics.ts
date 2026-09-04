@@ -30,7 +30,7 @@ export function registerGetDoraMetrics(server: McpServer): void {
     server.registerTool(
         "get_dora_metrics",
         {
-            description: "Calculate DORA metrics (deployment frequency, lead time, change failure rate, and MTTR) for a GitHub repository",
+            description: "Read-only operation to calculate DORA proxy metrics (deployment frequency, lead time for changes, change failure rate, and MTTR) for a GitHub repository. Returns a JSON object with metrics calculated over the specified period (default 30 days). Evaluates PR merge times, release frequencies, and GitHub Actions workflow run conclusions. Subject to public GitHub API rate limits. Requires no special auth but private repos will fail without GITHUB_TOKEN.",
             inputSchema,
         },
         executeGetDoraMetrics

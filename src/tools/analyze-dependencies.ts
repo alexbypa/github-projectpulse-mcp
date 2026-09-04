@@ -32,7 +32,7 @@ export function registerAnalyzeDependencies(server: McpServer): void {
     server.registerTool(
         "analyze_dependencies",
         {
-            description: "Get Dependabot alerts for a GitHub repository",
+            description: "Read-only operation to get Dependabot alerts for a GitHub repository. Returns a JSON array of vulnerable package dependencies, including summary, severity, state, and URL. Requires GITHUB_TOKEN with appropriate permissions (public repos often restrict alert visibility). USAGE GUIDELINES: Use this tool ONLY to find vulnerable npm/pip/etc dependencies. For static code vulnerabilities (CodeQL), use analyze_code_scanning. For A-F security grading, use get_health_score.",
             inputSchema
         },
         executeAnalyzeDependencies

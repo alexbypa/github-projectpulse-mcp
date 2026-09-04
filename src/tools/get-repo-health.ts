@@ -47,7 +47,7 @@ export function registerGetRepoHealth(server: McpServer): void {
     server.registerTool(
         "get_repo_health",
         {
-            description: "Get health information for a GitHub repository",
+            description: "Read-only operation to fetch basic repository metadata from the public GitHub API. Returns a JSON object containing full_name, description, stargazers_count, open_issues_count, language, license (SPDX ID), pushed_at (ISO date), default_branch, archived status, and forks_count. Subject to standard GitHub unauthenticated rate limits (60 requests/hour). USAGE GUIDELINES: Use this tool ONLY for basic metadata and stats. DO NOT use this tool for A-F grading (use get_health_score instead). For CI/CD workflow status, use check_ci_status. For vulnerability alerts, use analyze_dependencies or analyze_code_scanning. For DORA metrics, use get_dora_metrics.",
             inputSchema
         },
         executeGetRepoHealth

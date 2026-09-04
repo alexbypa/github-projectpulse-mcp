@@ -173,7 +173,7 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
     server.registerTool(
         "analyze_code_scanning",
         {
-            description: "Get open Code Scanning alerts (CodeQL) for a GitHub repository. Returns per alert: alert_number, rule_id, severity, rule_description, message_text (explains WHY the code is vulnerable), file path with start/end line, created_at, html_url. Use message_text to understand the specific vulnerability. Set trigger_scan=true to auto-discover and trigger the CodeQL workflow, poll for completion, then return fresh alerts.",
+            description: "Read/Write operation to get open Code Scanning (CodeQL) alerts for a GitHub repository. Returns a JSON array of alerts (rule_id, severity, description, message_text, location, html_url). Set trigger_scan=true (writes to GitHub Actions) to auto-discover and trigger the CodeQL workflow, poll for completion, then return fresh alerts. Requires GITHUB_TOKEN. USAGE GUIDELINES: Use this tool ONLY for deep code vulnerability scanning (CodeQL). For dependency/package vulnerabilities, use analyze_dependencies instead. For general A-F health grading, use get_health_score. For standard CI/CD workflow status, use check_ci_status.",
             inputSchema
         },
         executeAnalyzeCodeScanning
