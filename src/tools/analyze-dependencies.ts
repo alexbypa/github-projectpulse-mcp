@@ -8,6 +8,14 @@ const inputSchema = z.object({
     severity: z.enum(["critical", "high", "medium", "low"]).optional()
 });
 
+const outputSchema = z.array(z.object({
+    summary: z.string(),
+    severity: z.string(),
+    package_name: z.string().optional(),
+    state: z.string(),
+    html_url: z.string()
+}));
+
 export async function executeAnalyzeDependencies({ owner, repo, severity }: { owner: string; repo: string; severity?: string }) {
     const { data } = await getOctokit().dependabot.listAlertsForRepo({ owner, repo });
     const result = data.map((alert) => ({
@@ -42,6 +50,7 @@ export function registerAnalyzeDependencies(server: McpServer): void {
   - For static code security vulnerabilities (CodeQL), use 'analyze_code_scanning' instead.
   - For a computed A-F health score grading, use 'get_health_score' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,

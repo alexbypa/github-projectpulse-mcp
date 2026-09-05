@@ -8,6 +8,16 @@ const inputSchema = z.object({
     limit: z.number().min(1).max(30).default(10).describe("Number of runs to return"),
 });
 
+const outputSchema = z.array(z.object({
+    name: z.string().nullable(),
+    status: z.string().nullable(),
+    conclusion: z.string().nullable(),
+    head_branch: z.string().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+    html_url: z.string()
+}));
+
 export async function executeCheckCiStatus({ owner, repo, limit }: { owner: string; repo: string; limit: number }) {
     const { data } = await getOctokit().actions.listWorkflowRunsForRepo({ owner, repo, per_page: limit });
     const result = data.workflow_runs.map((run) => ({
@@ -43,6 +53,7 @@ export function registerCheckCiStatus(server: McpServer): void {
   - For retrieving basic repository stats (stars, forks), use 'get_repo_health' instead.
   - For calculated DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,

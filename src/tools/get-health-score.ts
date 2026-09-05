@@ -18,6 +18,31 @@ const inputSchema = z.object({
     repo: z.string().describe("GitHub repository name (e.g., 'sdk')"),
 });
 
+const healthReportSchema = z.object({
+    repo: z.string(),
+    score: z.number(),
+    grade: z.string(),
+    breakdown: z.record(z.object({
+        score: z.number(),
+        weight: z.number(),
+        detail: z.string()
+    })),
+    suggestions: z.array(z.string()),
+    checkedAt: z.string(),
+    gradeMeaning: z.string()
+});
+
+const outputSchema = z.object({
+    report: healthReportSchema,
+    trend: z.object({
+        previousScore: z.number(),
+        previousGrade: z.string(),
+        previousCheckedAt: z.string(),
+        scoreDiff: z.number(),
+        direction: z.string()
+    }).nullable()
+});
+
 export async function executeGetHealthScore({ owner, repo }: { owner: string; repo: string }) {
     const octokit = getOctokit();
 
@@ -94,6 +119,7 @@ export function registerGetHealthScore(server: McpServer): void {
   - For deep code vulnerability scanning, use 'analyze_code_scanning' instead.
   - For DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,

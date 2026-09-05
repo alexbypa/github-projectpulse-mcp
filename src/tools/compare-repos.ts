@@ -16,6 +16,31 @@ export const inputSchema = z.object({
     })
 });
 
+const healthReportSchema = z.object({
+    repo: z.string(),
+    score: z.number(),
+    grade: z.string(),
+    breakdown: z.record(z.object({
+        score: z.number(),
+        weight: z.number(),
+        detail: z.string()
+    })),
+    suggestions: z.array(z.string()),
+    checkedAt: z.string(),
+    gradeMeaning: z.string()
+});
+
+const outputSchema = z.object({
+    compared_at: z.string(),
+    repos: z.array(z.object({
+        owner: z.string(),
+        repo: z.string(),
+        rank: z.number(),
+        health: healthReportSchema.nullable(),
+        error: z.string().nullable()
+    }))
+});
+
 export async function executeCompareRepos({ repos }: { repos: { owner: string; repo: string; }[] }) {
     const reposResults = await Promise.all(
         repos.map(async (repo): Promise<{ owner: string; repo: string; health: HealthReport | null; error: string | null }> => {
@@ -100,6 +125,7 @@ export function registerCompareRepos(server: McpServer): void {
   - For getting the health score of a single repository, use 'get_health_score' instead.
   - For comparing raw metadata instead of health scores, query 'get_repo_health' individually.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,

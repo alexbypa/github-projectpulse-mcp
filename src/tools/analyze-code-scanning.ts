@@ -13,6 +13,23 @@ const inputSchema = z.object({
         .describe("Seconds between poll attempts (default 15)")
 });
 
+const outputSchema = z.object({
+    alerts: z.array(z.object({
+        rule_id: z.string().nullable(),
+        severity: z.string().nullable(),
+        rule_description: z.string().nullable(),
+        state: z.string(),
+        most_recent_instance_path: z.string().optional(),
+        most_recent_instance_start_line: z.number().optional(),
+        html_url: z.string(),
+        alert_number: z.number(),
+        message_text: z.string().optional(),
+        end_line: z.number().optional(),
+        created_at: z.string()
+    })),
+    warning: z.string().optional()
+});
+
 async function discoverCodeQLWorkflow(owner: string, repo: string): Promise<{ id: number; name: string }> {
     const octokit = getOctokit();
     
@@ -184,6 +201,7 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
   - For a computed A-F health score grading, use 'get_health_score' instead.
   - For checking standard CI/CD workflow statuses, use 'check_ci_status' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: false,
                 destructiveHint: false,
