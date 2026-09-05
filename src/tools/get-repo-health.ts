@@ -7,6 +7,19 @@ const inputSchema = z.object({
     repo: z.string().describe("GitHub repository name (e.g., 'sdk')")
 });
 
+const outputSchema = z.object({
+    full_name: z.string(),
+    description: z.string().nullable(),
+    stargazers_count: z.number(),
+    open_issues_count: z.number(),
+    language: z.string().nullable(),
+    license: z.string().nullable(),
+    pushed_at: z.string(),
+    default_branch: z.string(),
+    archived: z.boolean(),
+    forks_count: z.number()
+});
+
 export async function executeGetRepoHealth({ owner, repo }: { owner: string; repo: string }) {
     try {
         const { data } = await getOctokit().repos.get({ owner, repo });
@@ -59,6 +72,7 @@ export function registerGetRepoHealth(server: McpServer): void {
   - For package vulnerabilities and dependency graph, use 'analyze_dependencies' instead.
   - For code security and static analysis, use 'analyze_code_scanning' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,

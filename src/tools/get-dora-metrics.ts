@@ -9,6 +9,31 @@ const inputSchema = z.object({
     days: z.number().min(7).max(90).default(30).describe("Number of past days to analyze (default: 30)")
 });
 
+const outputSchema = z.object({
+    owner: z.string(),
+    repo: z.string(),
+    period_days: z.number(),
+    measured_from: z.string(),
+    measured_to: z.string(),
+    deployment_frequency: z.object({
+        releases_count: z.number(),
+        per_week: z.number().nullable()
+    }),
+    lead_time: z.object({
+        median_hours: z.number().nullable(),
+        pr_count: z.number()
+    }),
+    change_failure_rate: z.object({
+        total_runs: z.number(),
+        failed_runs: z.number(),
+        rate_percent: z.number().nullable()
+    }),
+    mttr: z.object({
+        median_hours: z.number().nullable(),
+        incidents_count: z.number()
+    })
+});
+
 export async function executeGetDoraMetrics({ owner, repo, days }: { owner: string; repo: string; days: number }) {
     const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
     const [releases, runs, prs] = await Promise.all([
@@ -41,6 +66,7 @@ export function registerGetDoraMetrics(server: McpServer): void {
   - For a computed A-F health score grading, use 'get_health_score' instead.
   - For general repository metadata, use 'get_repo_health' instead.`,
             inputSchema,
+            outputSchema,
             annotations: {
                 readOnlyHint: true,
                 destructiveHint: false,
