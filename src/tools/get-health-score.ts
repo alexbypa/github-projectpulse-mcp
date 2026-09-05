@@ -22,7 +22,7 @@ const healthReportSchema = z.object({
     repo: z.string(),
     score: z.number(),
     grade: z.string(),
-    breakdown: z.record(z.object({
+    breakdown: z.record(z.string(), z.object({
         score: z.number(),
         weight: z.number(),
         detail: z.string()
