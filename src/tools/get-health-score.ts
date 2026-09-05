@@ -121,7 +121,7 @@ export function registerGetHealthScore(server: McpServer): void {
             inputSchema,
             outputSchema,
             annotations: {
-                readOnlyHint: true,
+                readOnlyHint: false,
                 destructiveHint: false,
                 idempotentHint: true,
                 openWorldHint: true
