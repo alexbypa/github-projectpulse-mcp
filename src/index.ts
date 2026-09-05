@@ -8,7 +8,14 @@ import { registerAnalyzeCodeScanning } from "./tools/analyze-code-scanning.js";
 import { registerGetHealthScore } from "./tools/get-health-score.js";
 import { registerGetDoraMetrics } from "./tools/get-dora-metrics.js";
 import { registerCompareRepos } from "./tools/compare-repos.js";
-const server = new McpServer({ name: "projectpulse-mcp", version: "0.1.0" });
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf-8"));
+
+const server = new McpServer({ name: "projectpulse-mcp", version: pkg.version });
 
 registerCheckCiStatus(server);
 registerGetRepoHealth(server);
