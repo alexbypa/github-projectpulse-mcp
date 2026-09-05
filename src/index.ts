@@ -18,21 +18,5 @@ registerGetHealthScore(server);
 registerGetDoraMetrics(server);
 registerCompareRepos(server);
 
-server.registerTool(
-    "ping", {
-    description: "This is a simple ping, response with pong",
-    inputSchema: z.object({
-        message: z
-            .string()
-            .describe("This is a simple ping, response with pong")
-    }),
-},
-    async ({ message }) => {
-        return {
-            content: [{ type: "text", text: `pong ${message}` }]
-        };
-    }
-)
-
 const transport = new StdioServerTransport()
 await server.connect(transport);

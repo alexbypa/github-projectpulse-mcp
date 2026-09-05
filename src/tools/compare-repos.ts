@@ -100,6 +100,12 @@ export function registerCompareRepos(server: McpServer): void {
   - For getting the health score of a single repository, use 'get_health_score' instead.
   - For comparing raw metadata instead of health scores, query 'get_repo_health' individually.`,
             inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeCompareRepos
     );

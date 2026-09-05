@@ -183,7 +183,12 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
   - For package/dependency vulnerabilities, use 'analyze_dependencies' instead.
   - For a computed A-F health score grading, use 'get_health_score' instead.
   - For checking standard CI/CD workflow statuses, use 'check_ci_status' instead.`,
-            inputSchema
+            inputSchema,
+            annotations: {
+                readOnlyHint: false,
+                destructiveHint: false,
+                idempotentHint: false
+            }
         },
         executeAnalyzeCodeScanning
     );

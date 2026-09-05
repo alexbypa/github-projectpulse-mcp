@@ -1,7 +1,7 @@
 {
   "name": "projectpulse-mcp",
   "description": "MCP Server for GitHub repository health monitoring",
-  "version": "1.6.3",
+  "version": "1.5.1",
   "mcpName": "io.github.alexbypa/github-projectpulse-mcp",
   "main": "dist/index.js",
   "scripts": {

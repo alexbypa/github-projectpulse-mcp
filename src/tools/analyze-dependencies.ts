@@ -41,7 +41,13 @@ export function registerAnalyzeDependencies(server: McpServer): void {
 - Usage guidelines: Use this tool ONLY to find vulnerable package dependencies (npm, pip, etc.). DO NOT use this tool for other checks:
   - For static code security vulnerabilities (CodeQL), use 'analyze_code_scanning' instead.
   - For a computed A-F health score grading, use 'get_health_score' instead.`,
-            inputSchema
+            inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeAnalyzeDependencies
     );

@@ -43,6 +43,12 @@ export function registerCheckCiStatus(server: McpServer): void {
   - For retrieving basic repository stats (stars, forks), use 'get_repo_health' instead.
   - For calculated DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeCheckCiStatus
     );

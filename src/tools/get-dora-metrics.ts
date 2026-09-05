@@ -41,6 +41,12 @@ export function registerGetDoraMetrics(server: McpServer): void {
   - For a computed A-F health score grading, use 'get_health_score' instead.
   - For general repository metadata, use 'get_repo_health' instead.`,
             inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeGetDoraMetrics
     );

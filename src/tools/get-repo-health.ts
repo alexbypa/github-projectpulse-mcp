@@ -58,7 +58,13 @@ export function registerGetRepoHealth(server: McpServer): void {
   - For checking CI/CD workflow run statuses, use 'check_ci_status' instead.
   - For package vulnerabilities and dependency graph, use 'analyze_dependencies' instead.
   - For code security and static analysis, use 'analyze_code_scanning' instead.`,
-            inputSchema
+            inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeGetRepoHealth
     );

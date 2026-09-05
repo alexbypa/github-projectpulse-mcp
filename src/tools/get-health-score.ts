@@ -94,6 +94,12 @@ export function registerGetHealthScore(server: McpServer): void {
   - For deep code vulnerability scanning, use 'analyze_code_scanning' instead.
   - For DORA metrics, use 'get_dora_metrics' instead.`,
             inputSchema,
+            annotations: {
+                readOnlyHint: true,
+                destructiveHint: false,
+                idempotentHint: true,
+                openWorldHint: true
+            }
         },
         executeGetHealthScore
     );
