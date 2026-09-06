@@ -15,20 +15,36 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-  release:
+  validate-registry:
     needs: test
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
-      contents: write # <-- serve write per creare release
+      contents: read
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Create GitHub Release
-        run: gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}" --generate-notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install mcp-publisher
+        run: |
+          curl -L -o mcp-publisher.tar.gz https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
+          tar xzf mcp-publisher.tar.gz
+          chmod +x mcp-publisher
+      - name: Validate server.json schema
+        run: ./mcp-publisher validate
+      - name: Check version alignment
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          SRV_VERSION=$(node -p "require('./server.json').version")
+          SRV_PKG_VERSION=$(node -p "require('./server.json').packages[0].version")
+          echo "package.json: $PKG_VERSION"
+          echo "server.json:  $SRV_VERSION"
+          echo "server.json packages[0]: $SRV_PKG_VERSION"
+          if [ "$PKG_VERSION" != "$SRV_VERSION" ] || [ "$PKG_VERSION" != "$SRV_PKG_VERSION" ]; then
+            echo "::error::Version mismatch! All 3 versions must be aligned."
+            exit 1
+          fi
+          echo "✅ All versions aligned: $PKG_VERSION"
   publish:
-    needs: test
+    needs: validate-registry
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -60,5 +76,19 @@ jobs:
           chmod +x mcp-publisher
       - name: Login via OIDC
         run: ./mcp-publisher login github-oidc
+      - name: Wait for npm propagation
+        run: sleep 45
       - name: Publish to MCP Registry
         run: ./mcp-publisher publish
+  release:
+    needs: registry
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Create GitHub Release
+        run: gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
