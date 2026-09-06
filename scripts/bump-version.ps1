@@ -22,11 +22,10 @@ $newVersion = "$major.$minor.$patch"
 
 Write-Host "Bumping version: $current -> $newVersion ($Type)" -ForegroundColor Cyan
 
-# 3. Update server.json (both version fields)
-$serverJson = Get-Content "server.json" -Raw | ConvertFrom-Json
-$serverJson.version = $newVersion
-$serverJson.packages[0].version = $newVersion
-$serverJson | ConvertTo-Json -Depth 10 | Set-Content "server.json" -Encoding UTF8
+# 3. Update server.json (in-place replacement, preserves formatting)
+$serverContent = Get-Content "server.json" -Raw
+$serverContent = $serverContent -replace "`"version`": `"$current`"", "`"version`": `"$newVersion`""
+$serverContent | Set-Content "server.json" -NoNewline -Encoding UTF8
 
 Write-Host "server.json updated" -ForegroundColor Green
 
@@ -46,3 +45,11 @@ if ($pkgCheck -eq $srvCheck -and $pkgCheck -eq $srvPkgCheck) {
     Write-Host "MISMATCH! pkg=$pkgCheck srv=$srvCheck srvPkg=$srvPkgCheck" -ForegroundColor Red
     exit 1
 }
+
+# 6. Git commit + tag
+git add package.json server.json package-lock.json
+git commit -m "$newVersion"
+git tag "v$newVersion"
+
+Write-Host "Committed and tagged v$newVersion" -ForegroundColor Green
+Write-Host "Run: git push && git push --tags" -ForegroundColor Yellow
