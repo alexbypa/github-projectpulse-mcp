@@ -32,7 +32,8 @@ export async function executeAnalyzeDependencies({ owner, repo, severity }: { ow
         content: [{
             type: "text" as const,
             text: JSON.stringify(filtered, null, 2)
-        }]
+        }],
+        structuredContent: filtered as unknown as Record<string, unknown>
     };
 }
 

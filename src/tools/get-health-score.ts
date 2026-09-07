@@ -100,6 +100,7 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
             type: "text" as const,
             text: JSON.stringify(response, null, 2),
         }],
+        structuredContent: response
     };
 }
 

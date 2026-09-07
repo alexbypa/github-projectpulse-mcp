@@ -35,6 +35,7 @@ export async function executeCheckCiStatus({ owner, repo, limit }: { owner: stri
             type: "text" as const,
             text: JSON.stringify(result, null, 2),
         }],
+        structuredContent: result as unknown as Record<string, unknown>
     };
 }
 

@@ -29,6 +29,12 @@ This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server giv
 
 ## 📸 Example
 
+### MCP Inspector — `get_repo_health`
+
+![MCP Inspector Demo](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/projectpulse-inspector-demo.png)
+
+### Code Scanning — `analyze_code_scanning`
+
 ![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/code-scanning-example.png)
 
 ## 🚀 Quick Start

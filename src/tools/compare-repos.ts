@@ -107,7 +107,8 @@ export async function executeCompareRepos({ repos }: { repos: { owner: string; r
     return {
         content: [
             { type: "text" as const, text: JSON.stringify(comparison, null, 2) }
-        ]
+        ],
+        structuredContent: comparison
     };
 }
 

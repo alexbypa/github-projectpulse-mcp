@@ -47,7 +47,8 @@ export async function executeGetDoraMetrics({ owner, repo, days }: { owner: stri
     return {
         content: [
             { type: "text" as const, text: JSON.stringify(metrics, null, 2) }
-        ]
+        ],
+        structuredContent: metrics
     }
 }
 

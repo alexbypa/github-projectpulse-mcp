@@ -158,16 +158,17 @@ export async function executeAnalyzeCodeScanning(input: z.infer<typeof inputSche
             created_at: alert.created_at
         }));
         
-        const responseText = JSON.stringify({
+        const response = {
             alerts: result,
             ...(warning ? { warning } : {})
-        }, null, 2);
+        };
         
         return {
             content: [{
                 type: "text" as const,
-                text: responseText
-            }]
+                text: JSON.stringify(response, null, 2)
+            }],
+            structuredContent: response
         };
 
     } catch (error) {
