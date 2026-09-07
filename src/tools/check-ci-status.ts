@@ -8,15 +8,17 @@ const inputSchema = z.object({
     limit: z.number().min(1).max(30).default(10).describe("Number of runs to return"),
 });
 
-const outputSchema = z.array(z.object({
-    name: z.string().nullable(),
-    status: z.string().nullable(),
-    conclusion: z.string().nullable(),
-    head_branch: z.string().nullable(),
-    created_at: z.string(),
-    updated_at: z.string(),
-    html_url: z.string()
-}));
+const outputSchema = z.object({
+    runs: z.array(z.object({
+        name: z.string().nullable(),
+        status: z.string().nullable(),
+        conclusion: z.string().nullable(),
+        head_branch: z.string().nullable(),
+        created_at: z.string(),
+        updated_at: z.string(),
+        html_url: z.string()
+    }))
+});
 
 export async function executeCheckCiStatus({ owner, repo, limit }: { owner: string; repo: string; limit: number }) {
     const { data } = await getOctokit().actions.listWorkflowRunsForRepo({ owner, repo, per_page: limit });
@@ -30,12 +32,13 @@ export async function executeCheckCiStatus({ owner, repo, limit }: { owner: stri
         html_url: run.html_url,
     }));
 
+    const response = { runs: result };
     return {
         content: [{
             type: "text" as const,
-            text: JSON.stringify(result, null, 2),
+            text: JSON.stringify(response, null, 2),
         }],
-        structuredContent: result as unknown as Record<string, unknown>
+        structuredContent: response
     };
 }
 

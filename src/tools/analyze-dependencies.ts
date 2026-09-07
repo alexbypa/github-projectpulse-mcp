@@ -8,13 +8,15 @@ const inputSchema = z.object({
     severity: z.enum(["critical", "high", "medium", "low"]).optional()
 });
 
-const outputSchema = z.array(z.object({
-    summary: z.string(),
-    severity: z.string(),
-    package_name: z.string().optional(),
-    state: z.string(),
-    html_url: z.string()
-}));
+const outputSchema = z.object({
+    alerts: z.array(z.object({
+        summary: z.string(),
+        severity: z.string(),
+        package_name: z.string().optional(),
+        state: z.string(),
+        html_url: z.string()
+    }))
+});
 
 export async function executeAnalyzeDependencies({ owner, repo, severity }: { owner: string; repo: string; severity?: string }) {
     const { data } = await getOctokit().dependabot.listAlertsForRepo({ owner, repo });
@@ -28,12 +30,13 @@ export async function executeAnalyzeDependencies({ owner, repo, severity }: { ow
 
     const filtered = severity ? result.filter((alert) => alert.severity === severity) : result;
 
+    const response = { alerts: filtered };
     return {
         content: [{
             type: "text" as const,
-            text: JSON.stringify(filtered, null, 2)
+            text: JSON.stringify(response, null, 2)
         }],
-        structuredContent: filtered as unknown as Record<string, unknown>
+        structuredContent: response
     };
 }
 

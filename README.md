@@ -27,15 +27,76 @@ This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server giv
 - ⚙️ **CI/CD Status** — recent GitHub Actions workflow runs and conclusions
 - 📋 **Repository Info** — stars, forks, language, license, and general metadata
 
-## 📸 Example
+## 📸 Examples
 
-### MCP Inspector — `get_repo_health`
+> All screenshots taken live from [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector).
 
-![MCP Inspector Demo](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/projectpulse-inspector-demo.png)
+<details open>
+<summary><strong>get_health_score</strong> — A-F grade with category breakdown</summary>
 
-### Code Scanning — `analyze_code_scanning`
+![get_health_score](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/get_health_score_Use_Case.png)
+</details>
 
-![Code Scanning Example](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/code-scanning-example.png)
+<details>
+<summary><strong>get_dora_metrics</strong> — DORA delivery metrics from GitHub data</summary>
+
+![get_dora_metrics](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/get_dora_metrics_Use_Case.png)
+</details>
+
+<details>
+<summary><strong>compare_repos</strong> — Side-by-side health score ranking</summary>
+
+![compare_repos](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/compare_repos_Use_Case.png)
+</details>
+
+<details>
+<summary><strong>check_ci_status</strong> — Recent GitHub Actions workflow runs</summary>
+
+![check_ci_status](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/check_ci_status_Use_Case.png)
+</details>
+
+<details>
+<summary><strong>get_repo_health</strong> — Repository metadata and stats</summary>
+
+![get_repo_health](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/get_repo_health_Use_Case.png)
+</details>
+
+<details>
+<summary><strong>analyze_dependencies</strong> — Dependabot vulnerability alerts</summary>
+
+![analyze_dependencies](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/analyze_dependencies_Use_Case.png)
+</details>
+
+## 💡 Use Cases
+
+> Copy-paste these prompts into Claude, Cursor, Windsurf, or any MCP-compatible assistant.
+
+### Due Diligence — Library Adoption
+> "Evaluate whether `facebook/react` is production-ready. Check the health score, security vulnerabilities (Dependabot and CodeQL), and whether the CI pipeline passes consistently."
+
+*Tools used: `get_health_score`, `analyze_dependencies`, `analyze_code_scanning`, `check_ci_status`*
+
+### Compare Alternatives
+> "I need to choose between `expressjs/express`, `fastify/fastify`, and `koajs/koa`. Compare their health scores and tell me which one has the lowest technical risk."
+
+*Tools used: `compare_repos`*
+
+### Sprint Review — DORA Metrics
+> "Calculate the DORA metrics for `vercel/next.js` over the last 30 days. I want to present delivery performance at our sprint review."
+
+*Tools used: `get_dora_metrics`*
+
+### Trend Monitoring
+> "Check the health score of `microsoft/vscode`. Has it improved or worsened since the last time we checked?"
+
+*Tools used: `get_health_score` (includes trend comparison on repeated calls)*
+
+### Quick Security Audit
+> "Run a security audit of `pallets/flask`: Dependabot alerts, CodeQL vulnerabilities, and CI build status. Give me a complete picture."
+
+*Tools used: `analyze_dependencies`, `analyze_code_scanning`, `check_ci_status`*
+
+---
 
 ## 🚀 Quick Start
 

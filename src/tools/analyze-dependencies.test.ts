@@ -45,10 +45,10 @@ describe('executeAnalyzeDependencies', () => {
         expect(result.content[0].type).toBe('text');
 
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText).toHaveLength(3);
-        expect(parsedText[0].severity).toBe('critical');
-        expect(parsedText[1].severity).toBe('high');
-        expect(parsedText[2].severity).toBe('high');
+        expect(parsedText.alerts).toHaveLength(3);
+        expect(parsedText.alerts[0].severity).toBe('critical');
+        expect(parsedText.alerts[1].severity).toBe('high');
+        expect(parsedText.alerts[2].severity).toBe('high');
     });
 
     it('should return filtered dependencies if severity is provided', async () => {
@@ -61,9 +61,9 @@ describe('executeAnalyzeDependencies', () => {
         const result = await executeAnalyzeDependencies({ owner: 'test', repo: 'repo', severity: 'high' });
 
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText).toHaveLength(2);
-        expect(parsedText[0].package_name).toBe('express');
-        expect(parsedText[1].package_name).toBe('react');
+        expect(parsedText.alerts).toHaveLength(2);
+        expect(parsedText.alerts[0].package_name).toBe('express');
+        expect(parsedText.alerts[1].package_name).toBe('react');
     });
 
     it('should throw an error if API fails', async () => {

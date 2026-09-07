@@ -49,7 +49,7 @@ describe('executeCheckCiStatus', () => {
         expect(result.content[0].type).toBe('text');
         
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText).toEqual([
+        expect(parsedText.runs).toEqual([
             {
                 name: 'CI',
                 status: 'completed',
@@ -87,7 +87,7 @@ describe('executeCheckCiStatus', () => {
         expect(mockListRuns).toHaveBeenCalledWith({ owner: 'test', repo: 'empty-repo', per_page: 5 });
         
         const parsedText = JSON.parse(result.content[0].text);
-        expect(parsedText).toEqual([]);
+        expect(parsedText.runs).toEqual([]);
     });
 
     it('should throw error if API fails', async () => {

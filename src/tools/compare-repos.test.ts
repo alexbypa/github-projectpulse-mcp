@@ -22,12 +22,14 @@ describe('executeCompareRepos', () => {
                     content: [{
                         type: 'text' as const,
                         text: JSON.stringify({
-                            repo: 'test/repo-a',
-                            score: 85,
-                            grade: 'B',
-                            breakdown: {},
-                            suggestions: [],
-                            checkedAt: '2023-10-01T00:00:00Z'
+                            report: {
+                                repo: 'test/repo-a',
+                                score: 85,
+                                grade: 'B',
+                                breakdown: {},
+                                suggestions: [],
+                                checkedAt: '2023-10-01T00:00:00Z'
+                            }
                         })
                     }]
                 };
@@ -37,12 +39,14 @@ describe('executeCompareRepos', () => {
                     content: [{
                         type: 'text' as const,
                         text: JSON.stringify({
-                            repo: 'test/repo-b',
-                            score: 85,
-                            grade: 'B',
-                            breakdown: {},
-                            suggestions: [],
-                            checkedAt: '2023-10-01T00:00:00Z'
+                            report: {
+                                repo: 'test/repo-b',
+                                score: 85,
+                                grade: 'B',
+                                breakdown: {},
+                                suggestions: [],
+                                checkedAt: '2023-10-01T00:00:00Z'
+                            }
                         })
                     }]
                 };
@@ -52,12 +56,14 @@ describe('executeCompareRepos', () => {
                     content: [{
                         type: 'text' as const,
                         text: JSON.stringify({
-                            repo: 'test/repo-c',
-                            score: 70,
-                            grade: 'C',
-                            breakdown: {},
-                            suggestions: [],
-                            checkedAt: '2023-10-01T00:00:00Z'
+                            report: {
+                                repo: 'test/repo-c',
+                                score: 70,
+                                grade: 'C',
+                                breakdown: {},
+                                suggestions: [],
+                                checkedAt: '2023-10-01T00:00:00Z'
+                            }
                         })
                     }]
                 };

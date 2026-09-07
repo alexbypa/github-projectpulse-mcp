@@ -37,4 +37,23 @@ export type TrendSnapshot = {
   checkedAt: string;
 }
 
-export { Grade, CategoryScore, HealthReport, ComparisonResult };
+type Recommendation = {
+  category: string;
+  priority: "high" | "medium" | "low";
+  message: string;
+  impact: string;
+}
+
+export type RecommendationContext = {
+  ciPassed: number;
+  ciTotal: number;
+  daysSinceLastPush: number;
+  alerts: { critical: number; high: number; medium: number; low: number };
+  hasLicense: boolean;
+  hasDescription: boolean;
+  archived: boolean;
+  openIssues: number;
+  forks: number;
+}
+
+export { Grade, CategoryScore, HealthReport, ComparisonResult, Recommendation };

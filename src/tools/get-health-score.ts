@@ -11,6 +11,8 @@ import {
     calculateCommunityScore,
     calculateMaintenanceScore,
     calculateHealthScore,
+    generateRecommendations,
+    generateBadgeSnippet,
 } from "../scoring/health-score.js";
 
 const inputSchema = z.object({
@@ -32,6 +34,13 @@ const healthReportSchema = z.object({
     gradeMeaning: z.string()
 });
 
+const recommendationSchema = z.object({
+    category: z.string(),
+    priority: z.enum(["high", "medium", "low"]),
+    message: z.string(),
+    impact: z.string(),
+});
+
 const outputSchema = z.object({
     report: healthReportSchema,
     trend: z.object({
@@ -40,7 +49,9 @@ const outputSchema = z.object({
         previousCheckedAt: z.string(),
         scoreDiff: z.number(),
         direction: z.string()
-    }).nullable()
+    }).nullable(),
+    recommendations: z.array(recommendationSchema),
+    badgeSnippet: z.string(),
 });
 
 export async function executeGetHealthScore({ owner, repo }: { owner: string; repo: string }) {
@@ -82,6 +93,23 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
 
     const report = calculateHealthScore(`${owner}/${repo}`, categories);
 
+    const daysSinceLastPush = (Date.now() - new Date(repoData.data.pushed_at ?? new Date().toISOString()).getTime()) / (1000 * 60 * 60 * 24);
+    const ciPassed = (runsData.data.workflow_runs as Array<{ conclusion: string | null }>).filter(r => r.conclusion === "success").length;
+
+    const recommendations = generateRecommendations(categories, {
+        ciPassed,
+        ciTotal: runsData.data.workflow_runs.length,
+        daysSinceLastPush,
+        alerts: alertCounts,
+        hasLicense: repoData.data.license !== null,
+        hasDescription: repoData.data.description !== null,
+        archived: repoData.data.archived,
+        openIssues: repoData.data.open_issues_count,
+        forks: repoData.data.forks_count,
+    });
+
+    const badgeSnippet = generateBadgeSnippet(report.score);
+
     const response = {
         report,
         trend: previousSnapshot ? {
@@ -90,7 +118,9 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
             previousCheckedAt: previousSnapshot.checkedAt,
             scoreDiff: report.score - previousSnapshot.score,
             direction: report.score < previousSnapshot.score ? "↓" : report.score > previousSnapshot.score ? "↑" : "→"
-        } : null
+        } : null,
+        recommendations,
+        badgeSnippet,
     }
 
     await saveSnapshot(owner, repo, report);

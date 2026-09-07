@@ -46,7 +46,8 @@ export async function executeCompareRepos({ repos }: { repos: { owner: string; r
         repos.map(async (repo): Promise<{ owner: string; repo: string; health: HealthReport | null; error: string | null }> => {
             try {
                 const result = await executeGetHealthScore(repo);
-                const report = JSON.parse(result.content[0].text) as HealthReport;
+                const parsed = JSON.parse(result.content[0].text);
+                const report = parsed.report as HealthReport;
                 return {
                     owner: repo.owner,
                     repo: repo.repo,
