@@ -3,7 +3,7 @@
   "name": "io.github.alexbypa/github-projectpulse-mcp",
   "title": "ProjectPulse MCP",
   "description": "Monitor GitHub repo health, DORA metrics and CI signals from your AI assistant.",
-  "version": "1.6.14",
+  "version": "1.7.0",
   "repository": {
     "url": "https://github.com/alexbypa/github-projectpulse-mcp",
     "source": "github"
@@ -13,7 +13,7 @@
     {
       "registryType": "npm",
       "identifier": "projectpulse-mcp",
-      "version": "1.6.14",
+      "version": "1.7.0",
       "transport": {
         "type": "stdio"
       },

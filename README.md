@@ -221,6 +221,37 @@ Simple connectivity check. Returns "pong" with your message. Use to verify the M
 
 ## 🆕 What's New
 
+### HTTP Transport (v1.7.0)
+
+ProjectPulse now supports **Streamable HTTP transport** in addition to stdio. This enables running as a standalone HTTP server — ideal for Docker containers, remote deployments, and cross-runtime integrations (e.g., .NET clients consuming Node.js MCP tools over the network).
+
+**Default behavior is unchanged** — `npx projectpulse-mcp` still uses stdio. To activate HTTP mode:
+
+```bash
+MCP_TRANSPORT=http MCP_PORT=3000 node dist/index.js
+```
+
+| Env Variable | Default | Description |
+| --- | --- | --- |
+| `MCP_TRANSPORT` | `stdio` | Transport mode: `stdio` or `http` |
+| `MCP_PORT` | `3000` | HTTP server port (only used when `MCP_TRANSPORT=http`) |
+
+**Docker example:**
+
+```yaml
+projectpulse:
+  image: node:22-slim
+  command: >-
+    sh -c "npm install -g projectpulse-mcp &&
+           node /usr/local/lib/node_modules/projectpulse-mcp/dist/index.js"
+  environment:
+    - MCP_TRANSPORT=http
+    - MCP_PORT=3000
+    - GITHUB_TOKEN=${GITHUB_TOKEN}
+```
+
+Health check endpoint available at `GET /` (returns JSON with server name and version). MCP protocol endpoint at `POST /mcp`.
+
 ### OpenSSF Scorecard Integration
 
 Security score now blends **Dependabot alerts** (60%) with **OpenSSF Scorecard** checks (40%) for a more complete picture. 12 security-relevant checks are evaluated — repos without a scorecard gracefully fall back to Dependabot-only scoring.
