@@ -63,3 +63,47 @@ export async function listWorkflowRuns(owner: string, repo: string, since: Date)
         created_at: r.created_at,
     }));
 }
+
+// --- Best Practices ---
+
+export async function getCommunityProfile(owner: string, repo: string) {
+    const octokit = getOctokit();
+    const { data } = await octokit.request('GET /repos/{owner}/{repo}/community/profile', {
+        owner,
+        repo,
+    });
+    return data;
+}
+
+export async function getReadme(owner: string, repo: string): Promise<{ found: boolean; size: number }> {
+    const octokit = getOctokit();
+    try {
+        const { data } = await octokit.repos.getReadme({ owner, repo });
+        return { found: true, size: data.size };
+    } catch {
+        return { found: false, size: 0 };
+    }
+}
+
+export async function getFileExists(owner: string, repo: string, path: string): Promise<boolean> {
+    const octokit = getOctokit();
+    try {
+        await octokit.repos.getContent({ owner, repo, path });
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export async function getBranchProtection(owner: string, repo: string, branch: string): Promise<{ protected: boolean | null }> {
+    const octokit = getOctokit();
+    try {
+        await octokit.repos.getBranchProtection({ owner, repo, branch });
+        return { protected: true };
+    } catch (err: unknown) {
+        const status = (err as { status?: number }).status;
+        if (status === 404) return { protected: false };
+        // 403 = no admin access, can't check
+        return { protected: null };
+    }
+}

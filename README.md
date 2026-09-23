@@ -11,6 +11,7 @@
   <a href="https://github.com/alexbypa/github-projectpulse-mcp/stargazers"><img src="https://img.shields.io/github/stars/alexbypa/github-projectpulse-mcp" alt="stars" /></a>
   <a href="https://www.npmjs.com/package/projectpulse-mcp"><img src="https://img.shields.io/npm/dt/projectpulse-mcp" alt="downloads" /></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/alexbypa/github-projectpulse-mcp"><img src="https://img.shields.io/ossf-scorecard/github.com/alexbypa/github-projectpulse-mcp?label=openssf+scorecard" alt="OpenSSF Scorecard" /></a>
+  <a href="https://m8ven.ai/badge/mcp/alexbypa/github-projectpulse-mcp"><img src="https://m8ven.ai/badge/mcp/alexbypa/github-projectpulse-mcp" alt="M8ven MCP" /></a>
 </p>
 
 ---
@@ -26,6 +27,7 @@ This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server giv
 - 📦 **Dependency Analysis** — Dependabot alerts with severity filtering
 - ⚙️ **CI/CD Status** — recent GitHub Actions workflow runs and conclusions
 - 📋 **Repository Info** — stars, forks, language, license, and general metadata
+- 📝 **Best Practices** — 12-point checklist for open-source repo quality (README, LICENSE, SECURITY.md, templates, branch protection, etc.) with A-F grade
 
 ## 📸 Examples
 
@@ -65,6 +67,12 @@ This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server giv
 <summary><strong>analyze_dependencies</strong> — Dependabot vulnerability alerts</summary>
 
 ![analyze_dependencies](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/analyze_dependencies_Use_Case.png)
+</details>
+
+<details>
+<summary><strong>check_best_practices</strong> — Open-source repo quality checklist with A-F grade</summary>
+
+![check_best_practices](https://raw.githubusercontent.com/alexbypa/github-projectpulse-mcp/main/docs/images/check_best_practices_Use_Case.png)
 </details>
 
 ## 💡 Use Cases
@@ -213,6 +221,12 @@ Lists **CodeQL and other code scanning alerts**: rule ID, severity, vulnerabilit
 
 **Inputs:** `owner`, `repo`, `trigger_scan` (optional, default `false`), `poll_timeout_seconds` (optional, default 300), `poll_interval_seconds` (optional, default 15)
 **Try asking:** *"Are there any code scanning vulnerabilities in my-org/my-api?"*
+
+### `check_best_practices`
+Evaluates whether a repository follows **open-source community best practices**. Runs 12 weighted checks: README, LICENSE, SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT, issue/PR templates, branch protection, Dependabot config, CI/CD workflows, description, and topics. Returns a 0-100 weighted score with A-F grade, per-check pass/fail/unknown status, and actionable suggestions for every missing item. Branch protection check requires admin token access — returns "unknown" (not penalized) if unavailable.
+
+**Inputs:** `owner`, `repo`
+**Try asking:** *"Does my-org/my-repo follow open-source best practices?"*
 
 ### `ping`
 Simple connectivity check. Returns "pong" with your message. Use to verify the MCP server is running.

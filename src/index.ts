@@ -11,6 +11,7 @@ import { registerAnalyzeCodeScanning } from "./tools/analyze-code-scanning.js";
 import { registerGetHealthScore } from "./tools/get-health-score.js";
 import { registerGetDoraMetrics } from "./tools/get-dora-metrics.js";
 import { registerCompareRepos } from "./tools/compare-repos.js";
+import { registerCheckBestPractices } from "./tools/check-best-practices.js";
 import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -27,6 +28,7 @@ function createMcpServer(): McpServer {
   registerGetHealthScore(server);
   registerGetDoraMetrics(server);
   registerCompareRepos(server);
+  registerCheckBestPractices(server);
   return server;
 }
 
