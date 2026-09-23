@@ -204,9 +204,10 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
             inputSchema,
             outputSchema,
             annotations: {
-                readOnlyHint: false,
+                readOnlyHint: true,
                 destructiveHint: false,
-                idempotentHint: false
+                idempotentHint: true,
+                openWorldHint: true
             }
         },
         executeAnalyzeCodeScanning
