@@ -5,7 +5,7 @@ import { executeGetRepoHealth } from './get-repo-health.js';
 // Mock intero modulo
 vi.mock('../github/client.js');
 
-describe('executeGetRepoHealth', () => {
+describe('get_repo_health', () => {
     beforeEach(() => {
         vi.resetAllMocks();  // pulisci mock tra un test e l'altro
     });

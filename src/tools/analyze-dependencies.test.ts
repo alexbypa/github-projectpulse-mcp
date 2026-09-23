@@ -4,7 +4,7 @@ import { executeAnalyzeDependencies } from './analyze-dependencies.js';
 
 vi.mock('../github/client.js');
 
-describe('executeAnalyzeDependencies', () => {
+describe('analyze_dependencies', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });

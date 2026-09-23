@@ -4,7 +4,7 @@ import { executeGetHealthScore } from './get-health-score.js';
 
 vi.mock('./get-health-score.js');
 
-describe('executeCompareRepos', () => {
+describe('compare_repos', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });

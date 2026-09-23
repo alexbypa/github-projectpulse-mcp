@@ -4,7 +4,7 @@ import { executeAnalyzeCodeScanning } from './analyze-code-scanning.js';
 
 vi.mock('../github/client.js');
 
-describe('executeAnalyzeCodeScanning', () => {
+describe('analyze_code_scanning', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });

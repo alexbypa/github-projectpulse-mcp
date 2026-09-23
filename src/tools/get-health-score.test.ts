@@ -6,7 +6,7 @@ import { fetchOpenSSFScore } from '../security/openssf-client.js';
 vi.mock('../github/client.js');
 vi.mock('../security/openssf-client.js');
 
-describe('executeGetHealthScore', () => {
+describe('get_health_score', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });

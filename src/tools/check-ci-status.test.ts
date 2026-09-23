@@ -4,7 +4,7 @@ import { executeCheckCiStatus } from './check-ci-status.js';
 
 vi.mock('../github/client.js');
 
-describe('executeCheckCiStatus', () => {
+describe('check_ci_status', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });

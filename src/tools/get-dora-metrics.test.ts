@@ -4,7 +4,7 @@ import { executeGetDoraMetrics } from './get-dora-metrics.js';
 
 vi.mock('../github/client.js');
 
-describe('executeGetDoraMetrics', () => {
+describe('get_dora_metrics', () => {
     beforeEach(() => {
         vi.resetAllMocks();
     });
