@@ -18,6 +18,22 @@
 
 This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server gives AI assistants the ability to analyze health, security, CI/CD status, and delivery metrics of any GitHub repository — directly from your conversations.
 
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Examples](#-examples)
+- [Use Cases](#-use-cases)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Tools](#️-tools)
+- [Compatibility](#-compatibility)
+- [Architecture](#-architecture)
+- [Transport Modes](#-transport-modes)
+- [Configuration](#️-configuration)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [License](#-license)
+
 ## ✨ Features
 
 - 🏥 **Health Score** — comprehensive 0-100 score with grade (A-F), category breakdown, and improvement suggestions
@@ -105,6 +121,12 @@ This [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server giv
 *Tools used: `analyze_dependencies`, `analyze_code_scanning`, `check_ci_status`*
 
 ---
+
+## 📋 Prerequisites
+
+- **Node.js** v18 or later — [download](https://nodejs.org/)
+- **npm** (included with Node.js)
+- **GitHub Personal Access Token** (optional for public repos, required for private repos and security data)
 
 ## 🚀 Quick Start
 
@@ -283,6 +305,61 @@ New `get_dora_metrics` tool calculates proxy [DORA metrics](https://dora.dev/) f
 
 Metrics return `null` when insufficient data is available — works safely on any repository.
 
+## 🔌 Compatibility
+
+ProjectPulse works with any MCP-compatible client. Tested with:
+
+| Client | Transport | Status |
+| --- | --- | --- |
+| [Claude Desktop](https://claude.ai/download) | stdio | ✅ Tested |
+| [Claude Code (CLI)](https://docs.anthropic.com/en/docs/claude-code) | stdio | ✅ Tested |
+| [Cursor](https://cursor.sh/) | stdio | ✅ Tested |
+| [Windsurf](https://codeium.com/windsurf) | stdio | ✅ Tested |
+| [MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector) | stdio | ✅ Tested |
+| Docker / Remote | HTTP | ✅ Tested |
+| Any MCP client | stdio or HTTP | ✅ Compatible |
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                  MCP Client                     │
+│        (Claude, Cursor, Windsurf, etc.)         │
+└────────────────────┬────────────────────────────┘
+                     │ stdio or HTTP
+┌────────────────────▼────────────────────────────┐
+│            ProjectPulse MCP Server              │
+│                                                 │
+│  ┌─────────────┐  ┌─────────────┐              │
+│  │  Tool Layer  │  │  Transport  │              │
+│  │  (8 tools)   │  │ stdio/HTTP  │              │
+│  └──────┬──────┘  └─────────────┘              │
+│         │                                       │
+│  ┌──────▼──────┐  ┌─────────────┐              │
+│  │  GitHub API  │  │   OpenSSF   │              │
+│  │  (Octokit)   │  │  Scorecard  │              │
+│  └─────────────┘  └─────────────┘              │
+└─────────────────────────────────────────────────┘
+```
+
+- **Tool layer**: 8 independent tools, each in its own file (`src/tools/`)
+- **GitHub API**: all calls through a shared Octokit client (`src/github/client.ts`) with rate-limit handling
+- **OpenSSF Scorecard**: integrated via public API for security scoring
+- **Input validation**: Zod schemas at the MCP boundary
+- **Transport**: stdio (default) or Streamable HTTP — configurable via environment variables
+
+## 🚢 Transport Modes
+
+| | stdio (default) | HTTP |
+| --- | --- | --- |
+| **Activation** | `npx projectpulse-mcp` | `MCP_TRANSPORT=http node dist/index.js` |
+| **Best for** | Local MCP clients | Docker, remote, cross-runtime |
+| **Health check** | N/A | `GET /` → JSON |
+| **MCP endpoint** | stdin/stdout | `POST /mcp` |
+| **Config needed** | None | `MCP_TRANSPORT=http`, optionally `MCP_PORT` |
+
+See [What's New: HTTP Transport](#http-transport-v170) for Docker examples.
+
 ## ⚙️ Configuration
 
 ### GITHUB_TOKEN
@@ -307,14 +384,44 @@ Generate with `repo` + `security_events` scopes.
   GITHUB_TOKEN=ghp_your_token_here
   ```
 
+## 🧪 Testing
+
+All 8 tools have dedicated test suites. Tests use [Vitest](https://vitest.dev/) with mocked GitHub API responses.
+
+```bash
+# Run all tests
+npm test
+
+# Watch mode
+npm run test:watch
+```
+
+| Tool | Test file | Status |
+| --- | --- | --- |
+| `get_health_score` | `src/tools/get-health-score.test.ts` | ✅ |
+| `get_dora_metrics` | `src/tools/get-dora-metrics.test.ts` | ✅ |
+| `compare_repos` | `src/tools/compare-repos.test.ts` | ✅ |
+| `get_repo_health` | `src/tools/get-repo-health.test.ts` | ✅ |
+| `analyze_dependencies` | `src/tools/analyze-dependencies.test.ts` | ✅ |
+| `check_ci_status` | `src/tools/check-ci-status.test.ts` | ✅ |
+| `analyze_code_scanning` | `src/tools/analyze-code-scanning.test.ts` | ✅ |
+| `check_best_practices` | `src/tools/check-best-practices.test.ts` | ✅ |
+
 ## 👤 Author
 
 **alexbypa** — [GitHub](https://github.com/alexbypa) · [npm](https://www.npmjs.com/~alexbypa)
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!
-Feel free to check the [issues page](https://github.com/alexbypa/github-projectpulse-mcp/issues).
+Contributions, issues, and feature requests are welcome!
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Run tests (`npm test`) and ensure they pass
+4. Commit your changes
+5. Push to the branch and open a Pull Request
+
+See the [issues page](https://github.com/alexbypa/github-projectpulse-mcp/issues) for open tasks and bug reports.
 
 ## ⭐ Show your support
 
