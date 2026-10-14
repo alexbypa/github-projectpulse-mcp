@@ -121,8 +121,11 @@ describe("trend-tracker", () => {
         });
 
         it("should throw on path traversal attempt", async () => {
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             await saveSnapshot("../etc", mockRepo, mockReport);
             expect(fs.writeFile).not.toHaveBeenCalled();
+            expect(consoleSpy).toHaveBeenCalled();
+            consoleSpy.mockRestore();
         });
     });
 
@@ -139,8 +142,11 @@ describe("trend-tracker", () => {
             vi.mocked(fs.readFile).mockResolvedValue("[]");
             expect(await getLastSnapshot(mockOwner, mockRepo)).toBeNull();
             
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             vi.mocked(fs.readFile).mockResolvedValue("invalid-json");
             expect(await getLastSnapshot(mockOwner, mockRepo)).toBeNull();
+            expect(consoleSpy).toHaveBeenCalled();
+            consoleSpy.mockRestore();
         });
 
         it("should return the last snapshot in the array", async () => {
@@ -156,8 +162,11 @@ describe("trend-tracker", () => {
         });
 
         it("should return null on path traversal attempt", async () => {
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             const result = await getLastSnapshot("../etc", mockRepo);
             expect(result).toBeNull();
+            expect(consoleSpy).toHaveBeenCalled();
+            consoleSpy.mockRestore();
         });
     });
 });

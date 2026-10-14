@@ -52,6 +52,19 @@ const outputSchema = z.object({
     }).nullable(),
     recommendations: z.array(recommendationSchema),
     badgeSnippet: z.string(),
+    openssf: z.object({
+        score: z.number(),
+        securityChecksAverage: z.number(),
+        checksUsed: z.number(),
+        checksTotal: z.number(),
+        details: z.string(),
+        checks: z.array(z.object({
+            name: z.string(),
+            score: z.number(),
+            reason: z.string(),
+            documentation: z.object({ url: z.string() })
+        }))
+    }).nullable(),
 });
 
 export async function executeGetHealthScore({ owner, repo }: { owner: string; repo: string }) {
@@ -121,6 +134,7 @@ export async function executeGetHealthScore({ owner, repo }: { owner: string; re
         } : null,
         recommendations,
         badgeSnippet,
+        openssf: openssfResult ?? null,
     }
 
     await saveSnapshot(owner, repo, report);
@@ -143,7 +157,7 @@ export function registerGetHealthScore(server: McpServer): void {
 - Data sources: GitHub REST API (repos, actions, dependabot) and OpenSSF Scorecard API.
 - Auth requirements: No authentication required for public repositories. Uses configured token if available.
 - Rate limits: Subject to standard GitHub API limits (heavy usage across multiple endpoints).
-- Return shape: Returns a JSON object with a grade (A-F), total score, detailed category breakdown (CI, freshness, security, community, maintenance), improvement suggestions, and historical trend data.
+- Return shape: Returns a JSON object with a grade (A-F), total score, detailed category breakdown (CI, freshness, security, community, maintenance), improvement suggestions, historical trend data, and an 'openssf' object containing official score, securityChecksAverage, and individual 'checks' (worst score first).
 - Usage guidelines: Use this tool ONLY for deep analytical grading and overall repository health assessment. DO NOT use this tool for quick metadata checks:
   - For basic raw metadata (stars, language, etc.), use 'get_repo_health' instead.
   - For raw CI workflow statuses, use 'check_ci_status' instead.

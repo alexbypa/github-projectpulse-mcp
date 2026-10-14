@@ -16,7 +16,7 @@ describe('compare_repos', () => {
         // repo-c: 70 score (should be rank 3 in standard competition ranking)
         // repo-fail: fails
         
-        vi.mocked(executeGetHealthScore).mockImplementation(async (repo) => {
+        vi.mocked(executeGetHealthScore).mockImplementation(async (repo): Promise<any> => {
             if (repo.repo === 'repo-a') {
                 return {
                     content: [{

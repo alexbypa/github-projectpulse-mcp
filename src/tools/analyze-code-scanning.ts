@@ -17,6 +17,8 @@ const outputSchema = z.object({
     alerts: z.array(z.object({
         rule_id: z.string().nullable(),
         severity: z.string().nullable(),
+        tool_name: z.string().nullable(),
+        security_severity_level: z.string().nullable(),
         rule_description: z.string().nullable(),
         state: z.string(),
         most_recent_instance_path: z.string().optional(),
@@ -147,6 +149,8 @@ export async function executeAnalyzeCodeScanning(input: z.infer<typeof inputSche
         const result = data.map((alert) => ({
             rule_id: alert.rule.id,
             severity: alert.rule.severity,
+            tool_name: alert.tool?.name ?? null,
+            security_severity_level: alert.rule.security_severity_level ?? null,
             rule_description: alert.rule.description,
             state: alert.state,
             most_recent_instance_path: alert.most_recent_instance.location?.path,
@@ -191,13 +195,13 @@ export function registerAnalyzeCodeScanning(server: McpServer): void {
     server.registerTool(
         "analyze_code_scanning",
         {
-            description: `Fetches or triggers open Code Scanning (CodeQL) alerts for a GitHub repository.
-- Side effects: Read-only by default. If trigger_scan=true, writes to GitHub Actions by creating a workflow_dispatch event.
+            description: `Fetches or triggers open Code Scanning alerts from all tools (CodeQL, Scorecard, third-party) for a GitHub repository. Note: trigger_scan is CodeQL-only.
+- Side effects: Read-only by default. If trigger_scan=true (CodeQL-only), writes to GitHub Actions by creating a workflow_dispatch event.
 - Data sources: GitHub REST API (code-scanning/alerts and actions).
 - Auth requirements: Requires GITHUB_TOKEN with appropriate permissions (security-events).
 - Rate limits: Subject to standard GitHub API limits.
-- Return shape: Returns a JSON array of alert objects including rule_id, severity, rule_description, state, location paths, and html_url.
-- Usage guidelines: Use this tool ONLY for deep static code vulnerability scanning (CodeQL). DO NOT use this tool for other checks:
+- Return shape: Returns a JSON array of alert objects including tool_name, rule_id, severity (error/warning/note), security_severity_level (critical/high/medium/low as in GitHub UI, or null), rule_description, state, location paths, and html_url.
+- Usage guidelines: Use this tool ONLY for deep static analysis code vulnerability scanning. DO NOT use this tool for other checks:
   - For package/dependency vulnerabilities, use 'analyze_dependencies' instead.
   - For a computed A-F health score grading, use 'get_health_score' instead.
   - For checking standard CI/CD workflow statuses, use 'check_ci_status' instead.`,

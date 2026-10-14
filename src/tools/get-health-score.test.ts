@@ -124,14 +124,21 @@ describe('get_health_score', () => {
             dependabot: { listAlertsForRepo: mockListAlerts }
         } as any);
 
+        const mockChecks = [
+            { name: "Branch-Protection", score: 8, reason: "found", documentation: { url: "https://..." } }
+        ];
+
         vi.mocked(fetchOpenSSFScore).mockResolvedValue({
-            score: 80, checksUsed: 8, checksTotal: 10, details: "8/10 security checks, score 80/100"
+            score: 80, securityChecksAverage: 80, checksUsed: 8, checksTotal: 10, details: "8/10 security checks, score 80/100", checks: mockChecks
         });
 
         const result = await executeGetHealthScore({ owner: 'test', repo: 'repo' });
         const parsedText = JSON.parse(result.content[0].text);
         
         expect(parsedText.report.breakdown.security.detail).toContain('OpenSSF');
+        expect(result.structuredContent.openssf?.checks).toBeDefined();
+        expect(result.structuredContent.openssf?.checks).toHaveLength(1);
+        expect(result.structuredContent.openssf?.checks).toEqual(mockChecks);
     });
 
     it('should fallback to Dependabot only when OpenSSF is null', async () => {
@@ -154,5 +161,6 @@ describe('get_health_score', () => {
         
         expect(parsedText.report.breakdown.security.detail).not.toContain('OpenSSF');
         expect(parsedText.report.breakdown.security.score).toBe(100);
+        expect(result.structuredContent.openssf).toBeNull();
     });
 });

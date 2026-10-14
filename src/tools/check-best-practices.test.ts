@@ -47,7 +47,7 @@ describe('check_best_practices', () => {
             },
             health_percentage: 100,
             updated_at: '2023-01-01T00:00:00Z'
-        });
+        } as any);
 
         // Mock: getReadme() -> { found: boolean, size: number }
         vi.mocked(getReadme).mockResolvedValue({ found: true, size: 100 } as any);
@@ -131,7 +131,7 @@ describe('check_best_practices', () => {
             },
             health_percentage: 50,
             updated_at: '2023-01-01'
-        });
+        } as any);
 
         vi.mocked(getReadme).mockResolvedValue({ found: false, size: 0 } as any);
         vi.mocked(getFileExists).mockResolvedValue(true);

@@ -14,7 +14,8 @@ describe('analyze_code_scanning', () => {
             {
                 number: 1,
                 created_at: '2026-08-28T10:00:00Z',
-                rule: { id: 'js/sql-injection', severity: 'error', description: 'SQL Injection' },
+                tool: { name: 'CodeQL' },
+                rule: { id: 'js/sql-injection', severity: 'error', security_severity_level: 'high', description: 'SQL Injection' },
                 state: 'open',
                 most_recent_instance: {
                     message: { text: 'SQL query built from user input' },
@@ -43,6 +44,8 @@ describe('analyze_code_scanning', () => {
             alert_number: 1,
             rule_id: 'js/sql-injection',
             severity: 'error',
+            tool_name: 'CodeQL',
+            security_severity_level: 'high',
             rule_description: 'SQL Injection',
             state: 'open',
             message_text: 'SQL query built from user input',
@@ -52,6 +55,62 @@ describe('analyze_code_scanning', () => {
             created_at: '2026-08-28T10:00:00Z',
             html_url: 'https://github.com/test/repo/security/code-scanning/1'
         });
+    });
+
+    it('should return tool_name and security_severity_level', async () => {
+        const mockAlerts = [
+            {
+                number: 1,
+                created_at: '2026-08-28T10:00:00Z',
+                tool: { name: 'CodeQL' },
+                rule: { id: 'js/sql-injection', severity: 'error', security_severity_level: 'high', description: 'SQL Injection' },
+                state: 'open',
+                most_recent_instance: {
+                    message: { text: 'SQL query built from user input' },
+                    location: { path: 'src/db.ts', start_line: 10, end_line: 15 }
+                },
+                html_url: 'https://github.com/test/repo/security/code-scanning/1'
+            }
+        ];
+
+        const mockListAlerts = vi.fn().mockResolvedValue({ data: mockAlerts });
+        vi.mocked(getOctokit).mockReturnValue({
+            codeScanning: { listAlertsForRepo: mockListAlerts }
+        } as any);
+
+        const result = await executeAnalyzeCodeScanning({ owner: 'test', repo: 'repo', trigger_scan: false, poll_timeout_seconds: 300, poll_interval_seconds: 15 });
+        const parsedText = JSON.parse(result.content[0].text);
+
+        expect(parsedText.alerts[0].tool_name).toBe('CodeQL');
+        expect(parsedText.alerts[0].security_severity_level).toBe('high');
+    });
+
+    it('should return null for security_severity_level when absent', async () => {
+        const mockAlerts = [
+            {
+                number: 2,
+                created_at: '2026-08-28T10:00:00Z',
+                rule: { id: 'scorecard-check', severity: 'warning', description: 'Scorecard warning' },
+                state: 'open',
+                most_recent_instance: {
+                    message: { text: 'Lint issue' },
+                    location: { path: 'src/index.ts', start_line: 1, end_line: 1 }
+                },
+                html_url: 'https://github.com/test/repo/security/code-scanning/2'
+            }
+        ];
+
+        const mockListAlerts = vi.fn().mockResolvedValue({ data: mockAlerts });
+
+        vi.mocked(getOctokit).mockReturnValue({
+            codeScanning: { listAlertsForRepo: mockListAlerts }
+        } as any);
+
+        const result = await executeAnalyzeCodeScanning({ owner: 'test', repo: 'repo', trigger_scan: false, poll_timeout_seconds: 300, poll_interval_seconds: 15 });
+        const parsedText = JSON.parse(result.content[0].text);
+
+        expect(parsedText.alerts[0].security_severity_level).toBeNull();
+        expect(parsedText.alerts[0].tool_name).toBeNull();
     });
 
     it('should handle 404 when code scanning is not configured', async () => {
